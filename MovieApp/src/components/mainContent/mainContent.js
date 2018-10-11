@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import { TabContent, TabPane, Nav, NavItem, NavLink} from 'reactstrap';
 import classnames from 'classnames';
-import Listing from '../Listing/Listing';
-import TopRated from '../Listing/TopRated';
-import NowPlaying from '../Listing/NowPlaying';
-import UpComing from '../Listing/Upcoming';
 import { tabContents } from './tabContents'
 
 class MainContent extends Component {
@@ -51,11 +47,7 @@ class MainContent extends Component {
                     <TabContent activeTab={this.state.activeTab}>
                         {tabContents.map((e, key) => {
                         return <TabPane key={key} tabId={e.index}>
-                        <e.component active={this.state.activeTab === e.index}/>
-                            {/* {this.state.activeTab === 1 ? <Listing active={true}/> : null}
-                            {this.state.activeTab === 2 ? <TopRated active={true}/> : null}
-                            {this.state.activeTab === 3 ? <NowPlaying active={true}/> : null}
-                            {this.state.activeTab === 4 ? <UpComing active={true}/> : null} */}
+                                <e.component active={this.state.activeTab === e.index}/>
                             </TabPane>
                         })}
                     </TabContent>
