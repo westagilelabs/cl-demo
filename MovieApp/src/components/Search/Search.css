@@ -61,11 +61,6 @@
     -webkit-border-radius: 3px;
     font-weight: bold;
   }
-  @media (max-width: 991px) and (min-width: 768px) {
-    .custom-search-wrapper form input {
-      width: 200px !important;
-    }
-  }
   .custom-search-wrapper form input::-webkit-input-placeholder {
     color: white;
   }
