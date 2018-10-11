@@ -76,7 +76,14 @@ class Search extends Component {
                                 </li>
                             </ul> */}
                             <ul className="searched-lists searchlist-user">
-                                <li>
+                            {this.state.searchResults.map((e, key) => {
+                                return <li>
+                                    <a className="searched-list" href="javascript:void(0);">
+                                        <span>{e.title}</span>
+                                    </a>
+                                </li>
+                            })}
+                                {/* <li>
                                     <a className="searched-list" href="javascript:void(0);">
                                         <span><strong className="matched">Ven</strong>om</span>
                                         <small>English</small>
@@ -93,7 +100,7 @@ class Search extends Component {
                                         <span><strong className="matched">Ven</strong>nice</span>
                                         <small>English</small>
                                     </a>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </form>

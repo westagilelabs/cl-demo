@@ -8,19 +8,20 @@ import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
 
-class TopRated extends Component {
+class NowPlaying extends Component {
     constructor (props) {
         super (props)
         this.state = {
-            topRated : [],
+            nowPlaying : [],
             movieDetail : false,
             movieId : 0
         }
     }
+
     componentDidUpdate (prevProps, prevStates) {
         if(prevProps.active !== this.props.active
             && this.props.active){
-            this.getTopratedMovies ()
+                this.getNowPlayingMovies ()
         }
     }
     setMovieDetail (e) {
@@ -29,15 +30,15 @@ class TopRated extends Component {
             movieId : e
         })
     }
-    getTopratedMovies () {
+    getNowPlayingMovies () {
         axiosInstance ({
             method : 'GET',
-            url : `movie/top_rated?api_key=${apiKey}`
+            url : `movie/now_playing?api_key=${apiKey}`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
-                topRated : res.data.results,
+                nowPlaying : res.data.results,
                 page : res.data.page,
                 totalPages : res.data.total_pages
             })
@@ -49,10 +50,10 @@ class TopRated extends Component {
     render () {
         return (
             <div className="container-fluid">
-                <h1>Top Rated Movies</h1>
-                {this.state.topRated.length > 0 ? 
+                <h1>Now Playing Movies</h1>
+                {this.state.nowPlaying.length > 0 ? 
                 <Row>
-                    {this.state.topRated.map((e, key) => {
+                    {this.state.nowPlaying.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
                         <Card onClick = {() => this.setMovieDetail(e.id)}>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
@@ -71,4 +72,4 @@ class TopRated extends Component {
     }
 }
 
-export default TopRated;
+export default NowPlaying;

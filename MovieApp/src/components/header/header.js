@@ -6,7 +6,7 @@ export default class header extends Component {
         return (
             <header className="navbar fixed-top header-section d-flex align-items-center justify-content-between  container-fluid">
                 <div className="d-flex align-items-center">
-                    <a className="navbar-brand-bars" href="javascript:void(0);">
+                    <a className="navbar-brand-bars" href="/">
                         <i className="fa fa-bars"></i>
                     </a>
                     <div className="navbar-brand">

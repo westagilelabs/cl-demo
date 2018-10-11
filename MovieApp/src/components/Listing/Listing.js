@@ -17,12 +17,14 @@ class Listing extends Component {
             page : 1,
             totalPages : 1,
             movieDetail : false,
-            popularMovies : [],
             movieId : 0
         }
     }
-    componentDidMount () {
-        this.getTrendingMovies ()
+    componentDidUpdate (prevProps, prevStates) {
+        if(prevProps.active !== this.props.active
+            && this.props.active){
+                this.getTrendingMovies ()
+            }
     }
     getTrendingMovies () {
         axiosInstance ({

@@ -8,36 +8,38 @@ import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
 
-class TopRated extends Component {
+class UpComing extends Component {
     constructor (props) {
         super (props)
         this.state = {
-            topRated : [],
+            upComing : [],
             movieDetail : false,
             movieId : 0
         }
     }
+
     componentDidUpdate (prevProps, prevStates) {
         if(prevProps.active !== this.props.active
             && this.props.active){
-            this.getTopratedMovies ()
+            this.getUpComingMovies ()
         }
     }
+    
     setMovieDetail (e) {
         this.setState ({
             movieDetail : true,
             movieId : e
         })
     }
-    getTopratedMovies () {
+    getUpComingMovies () {
         axiosInstance ({
             method : 'GET',
-            url : `movie/top_rated?api_key=${apiKey}`
+            url : `movie/upcoming?api_key=${apiKey}`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
-                topRated : res.data.results,
+                upComing : res.data.results,
                 page : res.data.page,
                 totalPages : res.data.total_pages
             })
@@ -49,10 +51,10 @@ class TopRated extends Component {
     render () {
         return (
             <div className="container-fluid">
-                <h1>Top Rated Movies</h1>
-                {this.state.topRated.length > 0 ? 
+                <h1>UpComing Movies</h1>
+                {this.state.upComing.length > 0 ? 
                 <Row>
-                    {this.state.topRated.map((e, key) => {
+                    {this.state.upComing.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
                         <Card onClick = {() => this.setMovieDetail(e.id)}>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
@@ -71,4 +73,4 @@ class TopRated extends Component {
     }
 }
 
-export default TopRated;
+export default UpComing;
