@@ -1,0 +1,29 @@
+.header-section{
+    background-color:  var(--theme-blue-btn);
+}
+.header-section .navbar-brand-bars{
+    color: var(--theme-dark-btn);
+    margin-right: 15px;
+}
+.header-section .navbar-brand small{
+    font-size: 21px;
+    text-transform: uppercase;
+}
+.header-section .navbar-brand .m{
+    color: violet;
+}
+.header-section .navbar-brand .o{
+    color: indigo;
+}
+.header-section .navbar-brand .v{
+    color: green;
+}
+.header-section .navbar-brand .i{
+    color: yellow;
+}
+.header-section .navbar-brand .e{
+    color: orange;
+}
+.header-section .navbar-brand .z{
+    color: red;
+}
