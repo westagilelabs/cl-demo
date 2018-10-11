@@ -42,6 +42,30 @@ export default class Upload extends React.Component{
     this.onFileUpdate = this.onFileUpdate.bind(this)
     this.getLocalTime = this.getLocalTime.bind(this)
     this.deleteFile = this.deleteFile.bind(this)
+    this.deleteAll = this.deleteAll.bind(this)
+  }
+
+  deleteAll() {
+    if(confirm("Are you sure want to delete all files ?")) {
+      const deleteUrl = "http://localhost:3000/upload/all";
+      const httpReqHeaders = {
+        'Content-Type': 'application/json'
+      };
+      const axiosConfigObject = {headers: httpReqHeaders};
+      axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
+        if(typeof response.data.connectivityProb != 'undefined') {
+          ToastStore.error(response.data.connectivityProb);
+        }
+        if(response.data.success) {
+          this.state.listOfFiles.splice(rowIndex, 1);
+          this.setState({listOfFiles: this.state.listOfFiles})
+          ToastStore.success(response.data.msg);
+        }
+      })
+      .catch((err) => {
+        ToastStore.error(err.response.data.msg);
+      });
+    }
   }
 
   selectUpdateFile(id , rowIndex) {
@@ -50,10 +74,8 @@ export default class Upload extends React.Component{
     this.setState({rowIndex: rowIndex});
   }
 
-  deleteFile(id, rowIndex) {
+  deleteFile(id, rowIndex, row) {
     if(confirm("Are you sure want to delete this file ?")) {
-
-
       const deleteUrl = "http://localhost:3000/upload/"+id;
       const httpReqHeaders = {
         'Content-Type': 'application/json'
@@ -112,7 +134,7 @@ export default class Upload extends React.Component{
         let dateFormat = 'YYYY-MM-DD HH:mm:ss';
         let testDateUtc = moment.utc(key.uploaded_on);
         let localDate = testDateUtc.local();
-        listOfFiles.push({'id': key._id, 'file_name': key.file_name, 'file_type': key.file_type, 'file_size': Math.round(key.file_size/1000) + ' KB', 'uploaded_on': this.getLocalTime(key.uploaded_on), 's3_url': key.s3_url, 'local_url': key.local_url})
+        listOfFiles.push({'_id': key._id, 'file_name': key.file_name, 'file_type': key.file_type, 'file_size': Math.round(key.file_size/1000) + ' KB', 'uploaded_on': this.getLocalTime(key.uploaded_on), 's3_url': key.s3_url, 'local_url': key.local_url})
       });
 
       this.setState({listOfFiles: listOfFiles});
@@ -214,6 +236,10 @@ export default class Upload extends React.Component{
             <Button color="blue" type="submit">
               Upload to S3
             </Button>
+            <br/><br/><br/>
+            <Button color="blue" type="button" onClick={this.deleteAll}>
+              Delete All Files
+            </Button>
 
             <ToastContainer store={ToastStore} position={ToastContainer.POSITION.TOP_RIGHT} lightBackground/>
             { this.state.showSpinner ? <SpinnerComponent/> : null }
@@ -251,9 +277,9 @@ export default class Upload extends React.Component{
                   Header: "Action",
                   Cell: row => (
                     <div>
-                      <span onClick={() => this.selectUpdateFile(row.original.id, row.index)}><i className="fas fa-upload hover"></i></span>
+                      <span onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
                       <span> / </span>
-                      <span onClick={() => this.deleteFile(row.original.id, row.index)}><i className="fas fa-times hover"></i></span>
+                      <span onClick={() => this.deleteFile(row.original._id, row.index, row)}><i className="fas fa-times hover"></i></span>
                       <span> / </span>
                       <span onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
                     </div>

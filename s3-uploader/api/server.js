@@ -8,7 +8,6 @@ var {Upload} = require('./models/upload');
 var formidable = require("formidable");
 var fs = require("fs");
 var http = require("http");
-// var https = require('https');
 var internetAvailable = require("internet-available");
 const AWS = require('aws-sdk');
 var shortid = require('shortid');
@@ -217,8 +216,28 @@ app.put('/upload/:id', (request, response) => {
 // Delete File
 app.delete('/upload/:id', (request, response) => {
   let id = request.params.id;
-  if(mongoose.Types.ObjectId.isValid(id)) {
 
+  if(id == 'all') {
+    // delete All files from s3
+    let params = {
+      Bucket: s3_bucket
+    };
+    s3.listObjects(params, function(err, data) {
+     if (err) console.log(err, err.stack);
+     else {
+       let deletedObjLen =data.Contents.length;
+       for(let i=0;i<deletedObjLen;i++) {
+         let deleted_key = data.Contents[i].Key;
+         s3.deleteObject({Bucket: s3_bucket, Key: data.Contents[i].Key}, function (err, data) {
+            if(deletedObjLen === (i+1)) {
+
+            }
+         });
+       }
+     }
+    });
+  }
+  else if(mongoose.Types.ObjectId.isValid(id)) {
     Upload.findById(id, function (err, uploadObj) {
       fs.unlink(localFileDir + '/' + uploadObj.file_name,function(err){
         if(err) return console.log(err);
