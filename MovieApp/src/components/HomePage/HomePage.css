@@ -1,0 +1,13 @@
+.homepage {
+    display: flex;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #081c24;
+    width: 100%;
+    z-index: 999;
+    height: 158px;
+}

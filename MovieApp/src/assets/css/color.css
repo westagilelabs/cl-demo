@@ -1,0 +1,40 @@
+:root {
+    --white                 : #FFFFFF;
+    --black                 : #000000;
+    --white-gray            : #F8F8F8;
+    --gray                  : #B3B3B3;
+    --custom-check-border   : #C1C1C1;
+
+
+
+    --theme-blue-btn        : #59B7E5;
+    --theme-dark-btn        : #3C4A60;
+    --theme-border-color    : #65758E;
+    --placeholder-color     : #BCCCE4;
+    --authenication-bg      : #F6F9FF;
+    --form-border           : #E2E8F2;
+    --facebook-bg           : #3c589b;
+    --instagram-bg          : radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);;
+    --twitter-bg            : #1da1f2;
+    --green-checkmark       : #3bd037;
+    --tab-payment-bg        : #88abe5;
+    --advertise-color       : #c9d3e3;
+    --alert-success         : #2dd584;
+    --alert-failure         : #b74243;
+    --alert-border-success  : #3ee896;
+    --alert-border-failure  : rgba(255,255,255,0.2);
+    --dropdown-hover        : #f8f9fa;
+    --sort-bg               : #273448;
+    --landing-search-btn    : #A1B0BB;
+    --type-article          : #C09210;
+    --type-article-bg       : #F9F4E7;
+    --type-story            : #52ABD7;
+    --type-story-bg         : #EFF8FD;
+    --type-question         : #1dc57c;
+    --type-question-bg      : #E8F9F1;
+    --badge-private-bg      : rgba(101, 117, 142, 0.1);
+    --badge-private         : #bccce4;
+    --user-story-placeholder: #D8d8d8;
+    --read-only-bg          : #F7F7F7;
+    --loved-it              : #e55960;
+}
