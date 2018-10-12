@@ -35,8 +35,9 @@ export default class Weather extends Component<Props> {
               <CardTitle>
                 <Link to={routes.WEATHER_DETAILS} replace>
                   {' '}
-                  {this.props.results.name}, {this.props.results.sys.country}{' '}
-                  {this.props.results.weather[0].description}{' '}
+                  {this.props.results.name}, {this.props.results.sys.country},{' '}
+                  {Math.floor(this.props.results.main.temp - 273.15)} °С,{' '}
+                  {this.props.results.weather[0].description}
                 </Link>{' '}
               </CardTitle>
               <CardSubtitle>
@@ -50,7 +51,7 @@ export default class Weather extends Component<Props> {
               </CardText>
               <CardText>
                 {' '}
-                wind {this.props.results.wind.speed} m/s. clouds{' '}
+                wind {this.props.results.wind.speed} m/s, clouds{' '}
                 {this.props.results.clouds.all} %, 1011 hpa{' '}
               </CardText>
               <CardText>
@@ -102,7 +103,7 @@ export default class Weather extends Component<Props> {
           </Form>
         </div>
         <div className={styles.weatherDetails}>
-          <div className="container-fluid">
+          <div className="container-fluid card-wrapper">
             <Row>{cityWeather}</Row>
           </div>
         </div>

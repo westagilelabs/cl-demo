@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /*
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
@@ -43,3 +45,24 @@ a:hover {
   text-decoration: none;
   cursor: pointer;
 }
+.card-wrapper .card {
+  border: 0;
+  text-align: center;
+  background-color: transparent;
+}
+.card-wrapper .card .card-body {
+  padding: 0;
+}
+.card-wrapper .card .card-body .card-title {
+  font-size: 28px;
+}
+.card-wrapper .card .card-body .card-title a {
+  color: #424242;
+}
+.card-wrapper .card .card-body .card-text {
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+/* eslint-enable */
