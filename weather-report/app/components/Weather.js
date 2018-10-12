@@ -2,12 +2,26 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {Row,Col, Label,Form, Card, CardImg, CardText, CardBody,
-  CardTitle, CardSubtitle} from 'reactstrap';
+import {
+  Row,
+  Col,
+  Label,
+  Form,
+  Card,
+  CardImg,
+  CardText,
+  CardBody,
+  CardTitle,
+  CardSubtitle
+} from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
+<<<<<<< HEAD
 import BgImage from '../assets/images/clouds.gif'
 import Preloader from './preloader/preloader';
+=======
+import BgImage from '../assets/images/clouds.gif';
+>>>>>>> 016f503660080aa47458190a74cb734dfd460c15
 
 type Props = {
   fetchWeather: () => void
@@ -17,7 +31,6 @@ export default class Weather extends Component<Props> {
   props: Props;
 
   render() {
-    console.log('results ==>', this.props.results);
     let cityWeather = '';
     if (this.props.results) {
       cityWeather = (
@@ -27,11 +40,15 @@ export default class Weather extends Component<Props> {
               <CardTitle>
                 <Link to={routes.WEATHER_DETAILS} replace>
                   {' '}
-                  {this.props.results.name}, {this.props.results.sys.country}, 
-                  {' '}{Math.floor(this.props.results.main.temp - 273.15)} °С,
-                  {' '}{this.props.results.weather[0].description}
+                  {this.props.results.name}, {this.props.results.sys.country},{' '}
+                  {Math.floor(this.props.results.main.temp - 273.15)} °С,{' '}
+                  {this.props.results.weather[0].description}
                 </Link>{' '}
               </CardTitle>
+              <CardSubtitle>
+                {Math.floor(this.props.results.main.temp - 273.15)}
+                °С
+              </CardSubtitle>
               <CardText>
                 Temp : from{' '}
                 {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
@@ -53,34 +70,46 @@ export default class Weather extends Component<Props> {
     }
     return (
       <div className={styles.weatherDetailsWrapper}>
-        <img src={BgImage} className={styles.cloudsImage}/>
-        <small className={styles.cloudBg}></small>
-        <Link className={styles.backButton} to={routes.HOME} data-tid="backButton">
+        <img src={BgImage} className={styles.cloudsImage} />
+        <small className={styles.cloudBg} />
+        <Link
+          className={styles.backButton}
+          to={routes.HOME}
+          onClick={this.props.clearState}
+          data-tid="backButton"
+        >
           <i className="fa fa-arrow-left" />
         </Link>
         <div className={styles.weatherInputs}>
-          <Form onSubmit={(e) => {
+          <Form
+            onSubmit={e => {
               e.preventDefault();
               this.props.fetchWeather(e);
-            }}   id="searchForm" noValidate >
-            <Label for="searchTextBox" className={styles.inputLabel}>Search the weather of a city/location</Label>
+            }}
+            id="searchForm"
+            noValidate
+          >
+            <Label for="searchTextBox" className={styles.inputLabel}>
+              Search the weather of a city/location
+            </Label>
             <div className={styles.inputGrp}>
-              <input type="text"
+              <input
+                type="text"
                 id="searchTextBox"
                 name="searchTextBox"
                 className={styles.inputField}
                 onChange={this.props.setSearchPhrase}
                 placeholder="Enter a city name here..."
               />
-              <button type="submit" className={styles.inputButton}>Search</button>
+              <button type="submit" className={styles.inputButton}>
+                Search
+              </button>
             </div>
           </Form>
         </div>
         <div className={styles.weatherDetails}>
           <div className="container-fluid card-wrapper">
-            <Row>
-              {cityWeather}
-            </Row>
+            <Row>{cityWeather}</Row>
           </div>
         </div>
       </div>
