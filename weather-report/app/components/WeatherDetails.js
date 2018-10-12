@@ -2,70 +2,51 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {Row} from 'reactstrap';
-import Chart from "react-google-charts";
+import { Row } from 'reactstrap';
+import Chart from 'react-google-charts';
 import styles from './Weather.css';
 import routes from '../constants/routes';
 
-const data = [
-    [
-      { type: 'date', label: 'Day' },
-      'Average temperature',
-      'Average hours of daylight',
-    ],
-      [new Date(2014, 0), -0.5, 5.7],
-      [new Date(2014, 1), 0.4, 8.7],
-      [new Date(2014, 2), 0.5, 12],
-      [new Date(2014, 3), 2.9, 15.3],
-      [new Date(2014, 4), 6.3, 18.6],
-      [new Date(2014, 5), 9, 20.9],
-      [new Date(2014, 6), 10.6, 19.8],
-      [new Date(2014, 7), 10.3, 16.6],
-      [new Date(2014, 8), 7.4, 13.3],
-      [new Date(2014, 9), 4.4, 9.9],
-      [new Date(2014, 10), 1.1, 6.6],
-      [new Date(2014, 11), -0.2, 4.5],
-];
-const options={
-  chart: {
-    title:
-      'Average Temperatures and Daylight in Iceland Throughout the Year',
+let tempData = [['day', 'Temperature']];
+const options = {
+  hAxis: {
+    title: 'Day'
   },
-  width: 900,
-    height: 500,
-    series: {
-    // Gives each series an axis name that matches the Y-axis below.
-    0: { axis: 'Temps' },
-    1: { axis: 'Daylight' },
-  },
-  axes: {
-    // Adds labels to each axis; they don't have to match the axis names.
-    y: {
-      Temps: { label: 'Temps (Celsius)' },
-      Daylight: { label: 'Daylight' },
-    },
+  vAxis: {
+    title: 'Temperature'
   }
-}
+};
 
-export default class Weather extends Component {
-
-  constructor(props){
+export default class WeatherDetails extends Component {
+  constructor(props) {
     super(props);
   }
 
-  componentDidMount(){
-    if(this.props.results.name){
+  componentDidMount() {
+    if (this.props.results.name) {
       this.props.fetchWeatherForecast(this.props.results.name);
     }
   }
 
-  render() {
-    console.log("results ==>",this.props);
-    if(this.props.forecast){
-          data = this.props.forecast.list.map((forecast,index) => {
+  componentWillUnmount() {
+    // this.props.clearStates();
+  }
 
-          })
+  render() {
+    console.log('results ==>', this.props);
+    if (this.props.forecast) {
+      let temp, date, description, hours;
+      this.props.forecast.list.map(forecast => {
+        console.log(JSON.stringify(forecast));
+        temp = Math.floor(forecast.main.temp - 273.15);
+        description = forecast.weather[0].description;
+        console.log('description', description);
+        date = new Date(forecast.dt_txt);
+        hours = date.getHours();
+        return tempData.push([date, temp]);
+      });
     }
+    console.log('data', tempData);
     return (
       <div>
         <div className={styles.backButton} data-tid="backButton">
@@ -75,15 +56,17 @@ export default class Weather extends Component {
         </div>
 
         <Row>
-          Weather in {this.props.results.name}, {this.props.results.sys.country} {Math.floor(this.props.results.main.temp - 273.15)}°С
+          Weather in {this.props.results.name}, {this.props.results.sys.country}{' '}
+          {Math.floor(this.props.results.main.temp - 273.15)}
+          °С
         </Row>
 
         <div className="App">
           <Chart
             chartType="LineChart"
-            width="100%"
+            width="800px"
             height="400px"
-            data={data}
+            data={tempData}
             options={options}
           />
         </div>
