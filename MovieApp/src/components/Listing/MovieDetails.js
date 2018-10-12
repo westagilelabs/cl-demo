@@ -43,17 +43,15 @@ class MovieDetails extends Component {
             <Link to={{pathname:'/'}}>home</Link>
                 <h1>Movie details</h1>
                 {Object.keys(this.state.movieDetails).length > 0  ? 
-                    <Row>
-                    <Col  md="4" sm="12" >
+                    <div className="movie-details-wrapper">
                         <Card>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path}`} alt={this.state.movieDetails.title} />
                             <CardBody>
-                            <CardTitle>{this.state.movieDetails.title}</CardTitle>
-                            <CardText >{this.state.movieDetails.overview}</CardText>
+                                <CardTitle>{this.state.movieDetails.title}</CardTitle>
+                                <CardText >{this.state.movieDetails.overview}</CardText>
                             </CardBody>
                         </Card>
-                    </Col>
-                </Row>
+                    </div>
                 : null}
             </div>
         )
