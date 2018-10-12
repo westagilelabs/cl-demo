@@ -3,19 +3,24 @@ import {
     Card, CardImg, CardText, CardBody,
     CardTitle, Row, Col 
 } from 'reactstrap'; 
-// import { moment } from 'moment'
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
+import { Pagination } from 'react-materialize'
+
 
 class UpComing extends Component {
     constructor (props) {
         super (props)
         this.state = {
             upComing : [],
+            page : 1,
+            totalPages : 1,
             movieDetail : false,
-            movieId : 0
+            movieId : 0,
+            setPage : false
         }
+        this.setPage = this.setPage.bind(this)                        
     }
 
     componentDidUpdate (prevProps, prevStates) {
@@ -31,17 +36,24 @@ class UpComing extends Component {
             movieId : e
         })
     }
+    setPage (e) {
+        this.setState ({
+            page : e,
+            setPage : true
+        })
+    }
     getUpComingMovies () {
         axiosInstance ({
             method : 'GET',
-            url : `movie/upcoming?api_key=${apiKey}`
+            url : `movie/upcoming?api_key=${apiKey}&page=${this.state.page}`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
                 upComing : res.data.results,
                 page : res.data.page,
-                totalPages : res.data.total_pages
+                totalPages : res.data.total_pages,
+                setPage : false                
             })
         })
         .catch(error => {
@@ -51,6 +63,7 @@ class UpComing extends Component {
     render () {
         return (
             <div className="container-fluid">
+                {this.state.setPage ? this.getUpComingMovies() : null}            
                 <h1>UpComing Movies</h1>
                 {this.state.upComing.length > 0 ? 
                 <Row>
@@ -68,6 +81,9 @@ class UpComing extends Component {
                 </Row>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                <div>
+                    <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {20} onSelect = {this.setPage}/>
+                </div>
             </div>
         )
     }

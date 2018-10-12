@@ -1,0 +1,7 @@
+{
+    "database": "movieApp",
+    "username": "testuser",
+    "password": "password",
+    "storageFile": "movieApp.sqlite"
+}
+  

@@ -3,19 +3,23 @@ import {
     Card, CardImg, CardText, CardBody,
     CardTitle, Row, Col 
 } from 'reactstrap'; 
-// import { moment } from 'moment'
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
+import { Pagination } from 'react-materialize'
 
 class TopRated extends Component {
     constructor (props) {
         super (props)
         this.state = {
             topRated : [],
+            page : 1,
+            totalPages : 1,
             movieDetail : false,
-            movieId : 0
+            movieId : 0,
+            setPage : false
         }
+        this.setPage = this.setPage.bind(this)                
     }
     componentDidUpdate (prevProps, prevStates) {
         if(prevProps.active !== this.props.active
@@ -29,17 +33,24 @@ class TopRated extends Component {
             movieId : e
         })
     }
+    setPage (e) {
+        this.setState ({
+            page : e,
+            setPage : true
+        })
+    }
     getTopratedMovies () {
         axiosInstance ({
             method : 'GET',
-            url : `movie/top_rated?api_key=${apiKey}`
+            url : `movie/top_rated?api_key=${apiKey}&page=${this.state.page}`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
                 topRated : res.data.results,
                 page : res.data.page,
-                totalPages : res.data.total_pages
+                totalPages : res.data.total_pages,
+                setPage : false
             })
         })
         .catch(error => {
@@ -49,6 +60,7 @@ class TopRated extends Component {
     render () {
         return (
             <div className="container-fluid">
+                {this.state.setPage ? this.getTopratedMovies() : null}
                 <h1>Top Rated Movies</h1>
                 {this.state.topRated.length > 0 ? 
                     <div className="movies-wrapper">
@@ -69,6 +81,9 @@ class TopRated extends Component {
                     </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                <div>
+                    <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {20} onSelect = {this.setPage}/>
+                </div>
             </div>
         )
     }

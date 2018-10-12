@@ -3,19 +3,24 @@ import {
     Card, CardImg, CardText, CardBody,
     CardTitle, Row, Col 
 } from 'reactstrap'; 
-// import { moment } from 'moment'
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
+import { Pagination } from 'react-materialize'
+
 
 class NowPlaying extends Component {
     constructor (props) {
         super (props)
         this.state = {
             nowPlaying : [],
+            page : 1,
+            totalPages : 1,
             movieDetail : false,
-            movieId : 0
+            movieId : 0,
+            setPage : false
         }
+        this.setPage = this.setPage.bind(this)        
     }
 
     componentDidUpdate (prevProps, prevStates) {
@@ -33,23 +38,31 @@ class NowPlaying extends Component {
     getNowPlayingMovies () {
         axiosInstance ({
             method : 'GET',
-            url : `movie/now_playing?api_key=${apiKey}`
+            url : `movie/now_playing?api_key=${apiKey}&page=${this.state.page}`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
                 nowPlaying : res.data.results,
                 page : res.data.page,
-                totalPages : res.data.total_pages
+                totalPages : res.data.total_pages,
+                setPage : false
             })
         })
         .catch(error => {
             console.log(error)
         })
     }
+    setPage (e) {
+        this.setState ({
+            page : e,
+            setPage : true
+        })
+    }
     render () {
         return (
             <div className="container-fluid">
+                {this.state.setPage ? this.getNowPlayingMovies() : null}
                 <h1>Now Playing Movies</h1>
                 {this.state.nowPlaying.length > 0 ? 
                     <Row>
@@ -67,6 +80,9 @@ class NowPlaying extends Component {
                     </Row>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                <div>
+                    <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {this.state.totalPages} onSelect = {this.setPage}/>
+                </div>
             </div>
         )
     }

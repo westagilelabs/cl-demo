@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+
 import Listing from '../Listing/Listing';
 import TopRated from '../Listing/TopRated';
 import NowPlaying from '../Listing/NowPlaying';

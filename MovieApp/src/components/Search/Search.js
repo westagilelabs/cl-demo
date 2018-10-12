@@ -65,7 +65,7 @@ class Search extends Component {
             movieId : e
         })
     }
-
+    
     render () {
         return (
             <div className="search-section">
