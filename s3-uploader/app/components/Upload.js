@@ -8,6 +8,7 @@ import axios from 'axios';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import ReactTable from "react-table";
 import moment from 'moment';
+import S3UploaderModelOperations from './S3UploaderModelOperations';
 
 export class SpinnerComponent extends React.Component{
   constructor(props){
@@ -42,30 +43,41 @@ export default class Upload extends React.Component{
     this.onFileUpdate = this.onFileUpdate.bind(this)
     this.getLocalTime = this.getLocalTime.bind(this)
     this.deleteFile = this.deleteFile.bind(this)
-    this.deleteAll = this.deleteAll.bind(this)
+    this.dumpData = this.dumpData.bind(this)
+    this.sync = this.sync.bind(this)
+
+    this.base_url = 'http://localhost:3000/'
   }
 
-  deleteAll() {
-    if(confirm("Are you sure want to delete all files ?")) {
-      const deleteUrl = "http://localhost:3000/upload/all";
-      const httpReqHeaders = {
-        'Content-Type': 'application/json'
-      };
-      const axiosConfigObject = {headers: httpReqHeaders};
-      axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
-        if(typeof response.data.connectivityProb != 'undefined') {
-          ToastStore.error(response.data.connectivityProb);
-        }
-        if(response.data.success) {
-          this.state.listOfFiles.splice(rowIndex, 1);
-          this.setState({listOfFiles: this.state.listOfFiles})
-          ToastStore.success(response.data.msg);
-        }
-      })
-      .catch((err) => {
-        ToastStore.error(err.response.data.msg);
-      });
-    }
+  sync() {
+
+  }
+
+  dumpData() {
+    this.setState({showSpinner: true});
+    axios.post('http://localhost:3000/dump', {})
+    .then( (response) => {
+        response.data.files.forEach( (file) => {
+          let model = {
+            s3_url: 'https://c3-demo.s3.amazonaws.com/'+file,
+            local_url: 'http://localhost:3000/download/'+file,
+            file_name: file,
+            file_size: 12325,
+            file_type: 'image/jpeg',
+            action_type: 'NEW_FILE',
+            connectivity: 1
+          }
+
+          S3UploaderModelOperations.newFile(model).then( (dbResp) => {});
+        });
+    })
+    .then( () => {
+      setTimeout( () => {
+         this.getFilesData();
+         this.setState({showSpinner: false});
+         ToastStore.success('50 Test Images are uploaded to S3');
+       }, 100);
+    });
   }
 
   selectUpdateFile(id , rowIndex) {
@@ -74,31 +86,8 @@ export default class Upload extends React.Component{
     this.setState({rowIndex: rowIndex});
   }
 
-  deleteFile(id, rowIndex, row) {
-    if(confirm("Are you sure want to delete this file ?")) {
-      const deleteUrl = "http://localhost:3000/upload/"+id;
-      const httpReqHeaders = {
-        'Content-Type': 'application/json'
-      };
-      const axiosConfigObject = {headers: httpReqHeaders};
-      axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
-        if(typeof response.data.connectivityProb != 'undefined') {
-          ToastStore.error(response.data.connectivityProb);
-        }
-        if(response.data.success) {
-          this.state.listOfFiles.splice(rowIndex, 1);
-          this.setState({listOfFiles: this.state.listOfFiles})
-          ToastStore.success(response.data.msg);
-        }
-      })
-      .catch((err) => {
-        ToastStore.error(err.response.data.msg);
-      });
-    }
-  }
-
   downloadFile(file, s3_url) {
-    let is_s3_url = s3_url!='' ? 'S3' : 'LOCAL'
+    let is_s3_url = s3_url!='NA' ? 'S3' : 'LOCAL'
     if(is_s3_url == 'S3') {
       ToastStore.info('Download is in progress...');
     }
@@ -107,12 +96,16 @@ export default class Upload extends React.Component{
         method: 'GET',
         responseType: 'blob',
       }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', file);
-        document.body.appendChild(link);
-        link.click();
+        if(response.data.size <= 47) {
+          ToastStore.error('This file was not found in local disk');
+        } else {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', file);
+          document.body.appendChild(link);
+          link.click();
+        }
       });
   }
 
@@ -128,17 +121,108 @@ export default class Upload extends React.Component{
   }
 
   getFilesData(){
-    axios.get('http://localhost:3000/list-files').then(response => {
-      let listOfFiles = [];
-      response.data.files.map((key) => {
-        let dateFormat = 'YYYY-MM-DD HH:mm:ss';
-        let testDateUtc = moment.utc(key.uploaded_on);
-        let localDate = testDateUtc.local();
-        listOfFiles.push({'_id': key._id, 'file_name': key.file_name, 'file_type': key.file_type, 'file_size': Math.round(key.file_size/1000) + ' KB', 'uploaded_on': this.getLocalTime(key.uploaded_on), 's3_url': key.s3_url, 'local_url': key.local_url})
+    S3UploaderModelOperations.getAllFiles().then( (files) => {
+      files.forEach( (item) => {
+        item.uploaded_on = this.getLocalTime(item.uploaded_on)
+        item.file_size = this.getFileSize(item.file_size)
       });
-
-      this.setState({listOfFiles: listOfFiles});
+      this.setState({listOfFiles: files});
     });
+  }
+
+  getFileSize(fsize) {
+    return Math.round(fsize/1000) + ' KB';
+  }
+
+  deleteFile(id, rowIndex) {
+    if(confirm(id=="all" ? "Are you sure want to delete all files ?" : "Are you sure want to delete this file ?")) {
+      this.setState({showSpinner: true});
+      let delete_id = id;
+      if(delete_id == 'all') {
+        S3UploaderModelOperations.getAllFiles().then( (files) => {
+          let fileNamesObj = [];
+          files.forEach(item => {
+            fileNamesObj.push({file_name: item.file_name})
+          });
+
+          const deleteUrl = "http://localhost:3000/delete-all";
+          const httpReqHeaders = {
+            'Content-Type': 'application/json'
+          };
+          const axiosConfigObject = {headers: httpReqHeaders, data: {file_names: fileNamesObj}};
+          axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
+            const deleteUrl = "http://localhost:3000/upload/idnotneed";
+            const httpReqHeaders = {
+              'Content-Type': 'application/json'
+            };
+
+            if(response.data.connectivity) {
+              S3UploaderModelOperations.deleteAllFiles().then( (dbResp) => {
+                if(dbResp) {
+                  this.state.listOfFiles.length = 0;
+                  this.setState({listOfFiles: this.state.listOfFiles})
+                  ToastStore.success(response.data.msg);
+                  this.setState({showSpinner: false});
+                }
+              });
+            } else {
+              ToastStore.error(response.data.connectivityProb);
+              S3UploaderModelOperations.softDeleteAllFiles().then( (dbResp) => {
+                if(dbResp) {
+                  this.state.listOfFiles.length = 0;
+                  this.setState({listOfFiles: this.state.listOfFiles})
+                  ToastStore.success(response.data.msg);
+                  this.setState({showSpinner: false});
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            ToastStore.error(err.response.data.msg);
+            this.setState({showSpinner: false});
+          });
+        });
+      } else {
+        S3UploaderModelOperations.getFileInfoById(delete_id).then( (dbResp) => {
+          const deleteUrl = "http://localhost:3000/upload/idnotneed";
+          const httpReqHeaders = {
+            'Content-Type': 'application/json'
+          };
+          const axiosConfigObject = {headers: httpReqHeaders, data: {file_name: dbResp.dataValues.file_name}};
+          axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
+            if(response.data.connectivity) {
+              S3UploaderModelOperations.deleteFile(delete_id).then( (deleteResp) => {
+                this.state.listOfFiles.splice(rowIndex, 1);
+                this.setState({listOfFiles: this.state.listOfFiles})
+                ToastStore.success(response.data.msg);
+                this.setState({showSpinner: false});
+              });
+            } else {
+              ToastStore.error(response.data.connectivityProb);
+              let deleteObj = {}
+              deleteObj._id = delete_id;
+              deleteObj.action_type = 'DELETE_FILE';
+              deleteObj.connectivity = 0;
+              deleteObj.is_deleted = 1;
+              S3UploaderModelOperations.updateFile(deleteObj).then( (deleteResp) => {
+                this.state.listOfFiles.splice(rowIndex, 1);
+                this.setState({listOfFiles: this.state.listOfFiles})
+                ToastStore.success(response.data.msg);
+                this.setState({showSpinner: false});
+              });
+            }
+
+            if(typeof response.data.notFoundOnLocalDisk != 'undefined') {
+              ToastStore.error(response.data.notFoundOnLocalDisk);
+            }
+          })
+          .catch((err) => {
+            ToastStore.error(err.response.data.msg);
+            this.setState({showSpinner: false});
+          });
+        });
+      }
+    }
   }
 
   onFormSubmit(e){
@@ -147,18 +231,35 @@ export default class Upload extends React.Component{
     this.setState({showSpinner: true});
     this.fileUpload(this.state.file).then((response)=>{
       if(typeof response.data.success != 'undefined' && response.data.success) {
+        let res = response.data.data;
+        let model = {
+          s3_url: res.Location,
+          local_url: res.local_url,
+          file_name: res.Key,
+          file_size: this.state.file.size,
+          file_type: this.state.file.type,
+          action_type: 'NEW_FILE',
+          connectivity: 1
+        }
         if(typeof response.data.connectivityProb != 'undefined') {
+          model.connectivity = 0;
           ToastStore.error(response.data.connectivityProb);
         }
-        this.state.listOfFiles.unshift(response.data.data);
-        this.state.listOfFiles[0].file_size = Math.round(response.data.data.file_size/1000) + ' KB'
-        this.state.listOfFiles[0].uploaded_on = this.getLocalTime(response.data.data.uploaded_on)
-        this.setState({listOfFiles: this.state.listOfFiles});
 
-        ToastStore.success(response.data.msg)
-        this.refs.uploadFile.value = '';
-        this.state.file = '';
-        this.setState({showSpinner: false});
+        S3UploaderModelOperations.newFile(model).then( (dbResp) => {
+            if(dbResp) {
+              let modelObj = dbResp.dataValues;
+              modelObj.uploaded_on = this.getLocalTime(dbResp.dataValues.uploaded_on)
+              modelObj.file_size = this.getFileSize(modelObj.file_size)
+              this.state.listOfFiles.unshift(modelObj);
+              this.setState({listOfFiles: this.state.listOfFiles});
+
+              ToastStore.success(response.data.msg)
+              this.refs.uploadFile.value = '';
+              this.state.file = '';
+              this.setState({showSpinner: false});
+            }
+        });
       } else {
         ToastStore.error(response.data.err);
         this.setState({showSpinner: false});
@@ -170,48 +271,72 @@ export default class Upload extends React.Component{
     });
   }
 
-  onChange(e) {
-    this.setState({file:e.target.files[0]})
-  }
-
   onFileUpdate(e) {
     this.setState({updatefile: e.target.files[0]}, () => {
-        this.setState({showSpinner: true});
-        const url = 'http://localhost:3000/upload/'+this.state.update_id;
-        const updateFormData = new FormData();
-        updateFormData.append('file',this.state.updatefile)
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        }
-        axios.put(url, updateFormData, config).then((response)=>{
-          if(typeof response.data.success != 'undefined' && response.data.success) {
-            if(typeof response.data.connectivityProb != 'undefined') {
-              ToastStore.error(response.data.connectivityProb);
-            }
-            this.state.listOfFiles[this.state.rowIndex] = response.data.data
-            this.state.listOfFiles[this.state.rowIndex].file_size = Math.round(response.data.data.file_size/1000) + ' KB'
-            this.state.listOfFiles[this.state.rowIndex].uploaded_on = this.getLocalTime(response.data.data.uploaded_on)
-            this.setState({listOfFiles: this.state.listOfFiles});
-
-            ToastStore.success(response.data.msg)
-            this.refs.uploadFile.value = '';
-            this.state.file = '';
-            this.state.update_id = null;
-            this.state.rowIndex = null;
-            this.state.updatefile = null;
-            this.setState({showSpinner: false});
-          } else {
-            ToastStore.error(response.data.err);
-            this.setState({showSpinner: false});
+        let update_id = this.state.update_id;
+        S3UploaderModelOperations.getFileInfoById(update_id).then( (dbResp) => {
+          this.setState({showSpinner: true});
+          const url = 'http://localhost:3000/upload/idnotneeded';
+          const updateFormData = new FormData();
+          updateFormData.append('file', this.state.updatefile)
+          updateFormData.append('file_name', dbResp.dataValues.file_name)
+          updateFormData.append('s3_url', dbResp.dataValues.s3_url)
+          const config = {
+              headers: {
+                  'content-type': 'multipart/form-data'
+              }
           }
-        })
-        .catch((err) => {
-          ToastStore.error(err.response.data.err);
-          this.setState({showSpinner: false});
+
+          axios.put(url, updateFormData, config).then((response)=>{
+            if(typeof response.data.success != 'undefined' && response.data.success) {
+              let res = response.data.data;
+              let model = {
+                _id: this.state.update_id,
+                s3_url: res.Location,
+                local_url: res.local_url,
+                file_name: res.Key,
+                file_size: this.state.updatefile.size,
+                file_type: this.state.updatefile.type,
+                action_type: 'UPDATE_FILE',
+                connectivity: 1,
+                uploaded_on: new Date()
+              }
+              if(typeof response.data.connectivityProb != 'undefined') {
+                model.connectivity = 0;
+                ToastStore.error(response.data.connectivityProb);
+              }
+
+              S3UploaderModelOperations.updateFile(model).then( (dbResp) => {
+                let modelObj = dbResp.dataValues;
+                modelObj.uploaded_on = this.getLocalTime(dbResp.dataValues.uploaded_on)
+                modelObj.file_size = this.getFileSize(modelObj.file_size)
+                this.state.listOfFiles[this.state.rowIndex] = modelObj
+                this.setState({listOfFiles: this.state.listOfFiles});
+
+                ToastStore.success(response.data.msg)
+                this.refs.uploadFile.value = '';
+                this.state.file = '';
+                this.state.update_id = null;
+                this.state.rowIndex = null;
+                this.state.updatefile = null;
+                this.setState({showSpinner: false});
+              });
+
+            } else {
+              ToastStore.error(response.data.err);
+              this.setState({showSpinner: false});
+            }
+          })
+          .catch((err) => {
+            ToastStore.error(err.response.data.err);
+            this.setState({showSpinner: false});
+          });
         });
     });
+  }
+
+  onChange(e) {
+    this.setState({file:e.target.files[0]})
   }
 
   fileUpload(file){
@@ -237,8 +362,16 @@ export default class Upload extends React.Component{
               Upload to S3
             </Button>
             <br/><br/><br/>
-            <Button color="blue" type="button" onClick={this.deleteAll}>
+            <Button color="blue" type="button" onClick={() => this.deleteFile('all', null)}>
               Delete All Files
+            </Button>
+            <br/><br/>
+            <Button color="blue" type="button" onClick={() => this.dumpData()}>
+              Upload Dummy Data
+            </Button>
+            <br/><br/>
+            <Button color="blue" type="button" onClick={() => this.sync()}>
+              SYNC
             </Button>
 
             <ToastContainer store={ToastStore} position={ToastContainer.POSITION.TOP_RIGHT} lightBackground/>
@@ -279,7 +412,7 @@ export default class Upload extends React.Component{
                     <div>
                       <span onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
                       <span> / </span>
-                      <span onClick={() => this.deleteFile(row.original._id, row.index, row)}><i className="fas fa-times hover"></i></span>
+                      <span onClick={() => this.deleteFile(row.original._id, row.index)}><i className="fas fa-times hover"></i></span>
                       <span> / </span>
                       <span onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
                     </div>

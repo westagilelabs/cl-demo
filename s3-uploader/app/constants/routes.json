@@ -1,3 +1,4 @@
 {
-  "UPLOAD": "/"
+  "HOME": "/",
+  "COUNTER": "/counter"
 }
