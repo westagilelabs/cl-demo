@@ -33,20 +33,25 @@ export default class WeatherDetails extends Component {
   }
 
   render() {
-    console.log('results ==>', this.props);
     if (this.props.forecast) {
       let temp, date, description, hours;
       this.props.forecast.list.map(forecast => {
         console.log(JSON.stringify(forecast));
         temp = Math.floor(forecast.main.temp - 273.15);
         description = forecast.weather[0].description;
-        console.log('description', description);
         date = new Date(forecast.dt_txt);
         hours = date.getHours();
         return tempData.push([date, temp]);
       });
     }
-    console.log('data', tempData);
+    let wind = this.props.results.wind.speed,
+      cloudiness = this.props.results.clouds.all,
+      pressure = this.props.results.main.pressure,
+      humidity = this.props.results.main.humidity,
+      sunrise = this.props.results.sys.sunrise,
+      sunset = this.props.results.sys.sunset,
+      lon = this.props.results.coord.lon,
+      lat = this.props.results.coord.lat;
     return (
       <div>
         <div className={styles.backButton} data-tid="backButton">
@@ -60,7 +65,7 @@ export default class WeatherDetails extends Component {
           {Math.floor(this.props.results.main.temp - 273.15)}
           °С
         </Row>
-
+        {/*This is temperature graph div*/}
         <div className="App">
           <Chart
             chartType="LineChart"
@@ -69,6 +74,30 @@ export default class WeatherDetails extends Component {
             data={tempData}
             options={options}
           />
+          {/*this is overview div*/}
+          <div>
+            <div>
+              <span> Wind </span> <span> {wind} m/s</span>
+            </div>
+            <div>
+              <span> Cloudiness </span> <span> {cloudiness}</span>
+            </div>
+            <div>
+              <span> Pressure </span> <span> {pressure} </span>
+            </div>
+            <div>
+              <span> Humidity </span> <span> {humidity} </span>
+            </div>
+            <div>
+              <span> Sunrise </span> <span> {sunrise}</span>
+            </div>
+            <div>
+              <span> Sunset </span> <span> {sunset}</span>
+            </div>
+            <div>
+              <span> Geo Coords </span> <span> {`[${lon},${lat}]`} </span>
+            </div>
+          </div>
         </div>
       </div>
     );

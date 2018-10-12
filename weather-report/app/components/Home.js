@@ -1,9 +1,10 @@
+/* eslint-disable */
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import routes from '../constants/routes';
 import styles from './Home.css';
-import BgImage from '../assets/images/clouds.gif'
+import BgImage from '../assets/images/clouds.gif';
 
 type Props = {};
 
@@ -13,15 +14,16 @@ export default class Home extends Component<Props> {
   render() {
     return (
       <div className={styles.container} data-tid="container">
-          <img src={BgImage} className={styles.cloudsImage}/>
-          <small className={styles.cloudBg}></small>
-          <div className={styles.landingWrapper}>
-            <span className={styles.logo}>It's all about WEATHER</span>
-            <Link className={styles.landingLink} to={routes.WEATHER} replace>
-              <i class="fab fa-mixcloud"></i>
-            </Link>
-          </div>
+        <img src={BgImage} className={styles.cloudsImage} />
+        <small className={styles.cloudBg} />
+        <div className={styles.landingWrapper}>
+          <span className={styles.logo}>It's all about WEATHER</span>
+          <Link className={styles.landingLink} to={routes.WEATHER} replace>
+            <i className="fab fa-mixcloud" />
+          </Link>
+        </div>
       </div>
     );
   }
 }
+/* eslint-enable */

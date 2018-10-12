@@ -29,7 +29,6 @@ export default class Weather extends Component<Props> {
   props: Props;
 
   render() {
-    console.log('results ==>', this.props.results);
     let cityWeather = '';
     if (this.props.results) {
       cityWeather = (
@@ -69,7 +68,7 @@ export default class Weather extends Component<Props> {
     return (
       <div>
         <div className={styles.backButton} data-tid="backButton">
-          <Link to={routes.HOME}>
+          <Link to={routes.HOME} onClick={this.props.clearState}>
             <i className="fa fa-arrow-left fa-3x" />
           </Link>
 
@@ -90,7 +89,6 @@ export default class Weather extends Component<Props> {
                 type="text"
                 id="searchTextBox"
                 name="searchTextBox"
-                value="Pune"
                 onChange={this.props.setSearchPhrase}
                 placeholder="Search"
               />
