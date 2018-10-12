@@ -16,12 +16,8 @@ import {
 } from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
-<<<<<<< HEAD
 import BgImage from '../assets/images/clouds.gif'
 import Preloader from './preloader/preloader';
-=======
-import BgImage from '../assets/images/clouds.gif';
->>>>>>> 016f503660080aa47458190a74cb734dfd460c15
 
 type Props = {
   fetchWeather: () => void
