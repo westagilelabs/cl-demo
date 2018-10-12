@@ -1,29 +1,31 @@
-import initialWeather from "../states/weather";
+import initialWeather from '../states/weather';
 
 const weatherReducer = (state = initialWeather, actions) => {
-
-  switch(actions.type){
-    case 'SET_SEARCH_PHRASE' :
+  switch (actions.type) {
+    case 'SET_SEARCH_PHRASE':
       return {
         ...state,
-        city : actions.val
+        city: actions.val
       };
-    case 'PUSH_WEATHER_RESULTS' :
+    case 'PUSH_WEATHER_RESULTS':
       return {
         ...state,
-        results : actions.val
+        results: actions.val
       };
-    case 'PUSH_WEATHER_FORECAST' :
+    case 'PUSH_WEATHER_FORECAST':
       return {
         ...state,
-        forecast : actions.val
+        forecast: actions.val
       };
-    default :
+    case 'CLEAR_WEATHER_STATE':
+      return {
+        ...initialWeather
+      };
+    default:
       return {
         ...state
-      }
+      };
   }
-
 };
 
 export default weatherReducer;
