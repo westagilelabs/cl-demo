@@ -25,6 +25,10 @@ export default class GithubScreen extends Component {
     ghrepo.prs({}, function (err, body, headers) {
       console.log(body); //json object
     })
+
+    ghrepo.contributors(function (err, body, headers) {
+      console.log("Contributors: " + body); //json object
+    })
   }
 
   getRepoInfo = () => {
