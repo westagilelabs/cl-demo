@@ -7,6 +7,7 @@ import {Row,Col, Label,Form, Card, CardImg, CardText, CardBody,
 import styles from './Weather.css';
 import routes from '../constants/routes';
 import BgImage from '../assets/images/clouds.gif'
+import Preloader from './preloader/preloader';
 
 type Props = {
   fetchWeather: () => void
