@@ -3,14 +3,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Input,
-  InputGroup,
-  InputGroupAddon,
   Row,
   Col,
   Label,
   Form,
-  Button,
   Card,
   CardImg,
   CardText,
@@ -20,6 +16,7 @@ import {
 } from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
+import BgImage from '../assets/images/clouds.gif';
 
 type Props = {
   fetchWeather: () => void
@@ -66,12 +63,18 @@ export default class Weather extends Component<Props> {
       );
     }
     return (
-      <div>
-        <div className={styles.backButton} data-tid="backButton">
-          <Link to={routes.HOME} onClick={this.props.clearState}>
-            <i className="fa fa-arrow-left fa-3x" />
-          </Link>
-
+      <div className={styles.weatherDetailsWrapper}>
+        <img src={BgImage} className={styles.cloudsImage} />
+        <small className={styles.cloudBg} />
+        <Link
+          className={styles.backButton}
+          to={routes.HOME}
+          onClick={this.props.clearState}
+          data-tid="backButton"
+        >
+          <i className="fa fa-arrow-left" />
+        </Link>
+        <div className={styles.weatherInputs}>
           <Form
             onSubmit={e => {
               e.preventDefault();
@@ -80,24 +83,29 @@ export default class Weather extends Component<Props> {
             id="searchForm"
             noValidate
           >
-            <Label for="searchTextBox">
+            <Label for="searchTextBox" className={styles.inputLabel}>
               Search the weather of a city/location
             </Label>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend" />
-              <Input
+            <div className={styles.inputGrp}>
+              <input
                 type="text"
                 id="searchTextBox"
                 name="searchTextBox"
+                className={styles.inputField}
                 onChange={this.props.setSearchPhrase}
-                placeholder="Search"
+                placeholder="Enter a city name here..."
               />
-            </InputGroup>
-
-            <Button type="submit">Search</Button>
+              <button type="submit" className={styles.inputButton}>
+                Search
+              </button>
+            </div>
           </Form>
         </div>
-        <Row>{cityWeather}</Row>
+        <div className={styles.weatherDetails}>
+          <div className="container-fluid">
+            <Row>{cityWeather}</Row>
+          </div>
+        </div>
       </div>
     );
   }
