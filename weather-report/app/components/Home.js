@@ -18,7 +18,7 @@ export default class Home extends Component<Props> {
           <div className={styles.landingWrapper}>
             <span className={styles.logo}>It's all about WEATHER</span>
             <Link className={styles.landingLink} to={routes.WEATHER} replace>
-              <i class="fab fa-mixcloud"></i>
+              <i className="fab fa-mixcloud"></i>
             </Link>
           </div>
       </div>

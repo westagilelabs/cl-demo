@@ -2,10 +2,11 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {Input, InputGroup, InputGroupAddon, Row,Col, Label,Form,Button, Card, CardImg, CardText, CardBody,
+import {Row,Col, Label,Form, Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle} from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
+import BgImage from '../assets/images/clouds.gif'
 
 
 type Props = {
@@ -32,34 +33,37 @@ export default class Weather extends Component<Props> {
       </Col>);
     }
     return (
-      <div>
-      <div className={styles.backButton} data-tid="backButton">
-      <Link to={routes.HOME}>
-    <i className="fa fa-arrow-left fa-3x" />
-      </Link>
-
-        <Form onSubmit={(e) => {
-          e.preventDefault();
-          this.props.fetchWeather(e);
-        }}   id="searchForm" noValidate >
-          <Label for="searchTextBox" >Search the weather of a city/location</Label>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend"></InputGroupAddon>
-            <Input type="text"
-                   id="searchTextBox"
-                   name="searchTextBox"
-                   onChange={this.props.setSearchPhrase}
-                   placeholder="Search"
-            />
-          </InputGroup>
-
-          <Button type="submit" >Search</Button>
-        </Form>
-      </div>
-        <Row>
-          {cityWeather}
-
-        </Row>
+      <div className={styles.weatherDetailsWrapper}>
+        <img src={BgImage} className={styles.cloudsImage}/>
+        <small className={styles.cloudBg}></small>
+        <Link className={styles.backButton} to={routes.HOME} data-tid="backButton">
+          <i className="fa fa-arrow-left" />
+        </Link>
+        <div className={styles.weatherInputs}>
+          <Form onSubmit={(e) => {
+              e.preventDefault();
+              this.props.fetchWeather(e);
+            }}   id="searchForm" noValidate >
+            <Label for="searchTextBox" className={styles.inputLabel}>Search the weather of a city/location</Label>
+            <div className={styles.inputGrp}>
+              <input type="text"
+                id="searchTextBox"
+                name="searchTextBox"
+                className={styles.inputField}
+                onChange={this.props.setSearchPhrase}
+                placeholder="Enter a city name here..."
+              />
+              <button type="submit" className={styles.inputButton}>Search</button>
+            </div>
+          </Form>
+        </div>
+        <div className={styles.weatherDetails}>
+          <div className="container-fluid">
+            <Row>
+              {cityWeather}
+            </Row>
+          </div>
+        </div>
       </div>
   );
   }
