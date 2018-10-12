@@ -64,7 +64,7 @@ export default class WeatherDetails extends Component {
       lon = this.props.results.coord.lon,
       lat = this.props.results.coord.lat;
     return (
-      <div>
+      <div className="container-fluid">
         <div className={styles.backButton} data-tid="backButton">
           <Link to={routes.WEATHER}>
             <i className="fa fa-arrow-left fa-3x" />

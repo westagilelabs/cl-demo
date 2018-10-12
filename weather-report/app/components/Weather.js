@@ -2,6 +2,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import WeatherDetails from '../containers/WeatherDetailsPage'
 import {
   Row,
   Col,
@@ -16,7 +17,8 @@ import {
 } from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
-import BgImage from '../assets/images/clouds.gif';
+import BgImage from '../assets/images/clouds2.gif'
+import Preloader from './preloader/preloader';
 
 type Props = {
   fetchWeather: () => void
@@ -26,7 +28,7 @@ export default class Weather extends Component<Props> {
   props: Props;
 
   render() {
-    let cityWeather = '';
+    let cityWeather = '',details;
     if (this.props.results) {
       cityWeather = (
         <Col>
@@ -40,10 +42,6 @@ export default class Weather extends Component<Props> {
                   {this.props.results.weather[0].description}
                 </Link>{' '}
               </CardTitle>
-              <CardSubtitle>
-                {Math.floor(this.props.results.main.temp - 273.15)}
-                °С
-              </CardSubtitle>
               <CardText>
                 Temp : from{' '}
                 {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
@@ -62,6 +60,7 @@ export default class Weather extends Component<Props> {
           </Card>
         </Col>
       );
+      details = (<WeatherDetails/>);
     }
     return (
       <div className={styles.weatherDetailsWrapper}>
@@ -107,6 +106,7 @@ export default class Weather extends Component<Props> {
             <Row>{cityWeather}</Row>
           </div>
         </div>
+        {details}
       </div>
     );
   }
