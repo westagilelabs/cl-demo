@@ -1,4 +1,75 @@
-.cityCountryText {
-  color: orangered;
-  font-weight: bolder;
+/* eslint-disable */
+
+.cloudBg {
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
 }
+.cloudsImage {
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  position: absolute;
+}
+.backButton {
+  top: 10px;
+  left: 10px;
+  color: #333;
+  z-index: 2;
+  position: absolute;
+}
+.backButton > i {
+  font-size: 21px;
+}
+.weatherInputs.resultsFound {
+  position: relative;
+  transform: none;
+}
+.weatherInputs {
+  z-index: 1;
+  position: relative;
+}
+.inputLabel {
+  color: #333;
+  display: block;
+  font-size: 24px;
+  padding-top: 6px;
+  text-align: center;
+}
+.inputGrp {
+  margin: 0 auto;
+  position: relative;
+  max-width: 400px;
+  margin-bottom: 25px;
+}
+.inputField {
+  color: #eee;
+  width: 100%;
+  border: 0;
+  height: 50px;
+  padding: 0 100px 0 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #333;
+}
+.inputButton {
+  top: 50%;
+  right: 10px;
+  border: 0;
+  height: 36px;
+  cursor: pointer;
+  padding: 0 15px;
+  position: absolute;
+  transform: translateY(-50%);
+  box-shadow: none;
+  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.weatherDetails {
+  margin: 0 auto;
+  z-index: 1;
+  position: relative;
+}
+
+/* eslint-enable */
