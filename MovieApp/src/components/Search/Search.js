@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { apiKey } from '../../config/config';
-import axiosInstance from '../axiosInstance'
+import axiosInstance from '../axiosInstance';
+import { Redirect } from 'react-router-dom';
 
 class Search extends Component {
     constructor (props) {
@@ -10,7 +11,10 @@ class Search extends Component {
             searchResults : [],
             page : 1,
             totalPages : 1,
-            isFocused: false
+            isFocused: false,
+            searchQuery : false,
+            movieDetail : false,
+            movieId : 0
         }
         this.handleSearch = this.handleSearch.bind(this)
         this.getSearch = this.getSearch.bind(this)
@@ -19,25 +23,35 @@ class Search extends Component {
     getSearch () {
         axiosInstance ({
             method : 'GET',
-            url : `/search/multi?query=${this.state.search}?api_key=${apiKey}`
+            url : `search/multi?api_key=${apiKey}&query=${this.state.search}&page=1&include_adult=false`
         })
         .then(res => {
             console.log(res.data)
             this.setState ({
                 searchResults : res.data.results,
                 page : res.data.page,
-                totalPages : res.data.total_pages
+                totalPages : res.data.total_pages,
+                searchQuery : !this.state.searchQuery
             })
         })
         .catch(error => {
             console.log(error)
         })
     }
-    handleSearch (e) {
-        this.setState({
-            search: e.target.value
-        })
-        this.getSearch ()
+    handleSearch (e) { 
+        if(e.target.value.length === 0) {
+            this.setState ({
+                searchQuery : false,
+                search : e.target.value,
+                searchResults : []
+            })
+        }
+        if(e.target.value.length > 0) {
+            this.setState({
+                search: e.target.value,
+                searchQuery : !this.state.searchQuery
+            })
+        } 
     }
 
     onToggleFocus(){
@@ -45,10 +59,17 @@ class Search extends Component {
             isFocused: !this.state.isFocused
         })
     }
+    setMovieDetail (e) {
+        this.setState ({
+            movieDetail : true,
+            movieId : e
+        })
+    }
 
     render () {
         return (
             <div className="search-section">
+                {this.state.searchQuery ? this.getSearch() : null }
                 <div className="custom-search-wrapper">
                     <form className={'form-inline' + ' ' + (this.state.isFocused ? 'search-button-visible' : '')}>
                         <div className="form-search-combination">
@@ -57,7 +78,7 @@ class Search extends Component {
                                 id="searchGlobal" 
                                 className="form-control"
                                 type="search" 
-                                type="search" placeholder="Search"
+                                placeholder="Search"
                                 onBlur={this.onToggleFocus} 
                                 onFocus={this.onToggleFocus} 
                                 onChange={this.handleSearch}
@@ -66,45 +87,21 @@ class Search extends Component {
                         </div>
                         {/* <button className="btn my-2 my-sm-0" type="button">Search</button> */}
                         <div className="search-result-overlay"></div>
-                        <div className="search-result-section">
-                            {/* This is default text, which should visible when focused on the search */}
-                            {/* <ul className="searched-lists">
-                                <li>
-                                    <p className="d-flex align-items-center justify-content-center">
-                                        Search for a user or post
-                                    </p>
-                                </li>
-                            </ul> */}
-                            <ul className="searched-lists searchlist-user">
-                            {this.state.searchResults.map((e, key) => {
-                                return <li>
-                                    <a className="searched-list" href="javascript:void(0);">
-                                        <span>{e.title}</span>
-                                    </a>
-                                </li>
-                            })}
-                                {/* <li>
-                                    <a className="searched-list" href="javascript:void(0);">
-                                        <span><strong className="matched">Ven</strong>om</span>
-                                        <small>English</small>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="searched-list" href="javascript:void(0);">
-                                        <span><strong className="matched">Ven</strong>nala</span>
-                                        <small>Telugu</small>
-                                    </a>
-                                </li>
-                                <li className="d-none d-md-block">
-                                    <a className="searched-list" href="javascript:void(0);">
-                                        <span><strong className="matched">Ven</strong>nice</span>
-                                        <small>English</small>
-                                    </a>
-                                </li> */}
-                            </ul>
-                        </div>
+                            {this.state.searchResults.length > 0 ?
+                                <div className="search-result-section">
+                                    <ul className="searched-lists searchlist-user">
+                                    {this.state.searchResults.map((e, key) => {
+                                        return <li key={key}>
+                                                <span className="searched-list" onClick={() => {this.setMovieDetail(e.id)}}>{e.name || e.title}</span>
+                                        </li>
+                                    })}
+                                    </ul>
+                                </div>
+                                    : null
+                            }
                     </form>
                 </div>
+                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
             </div>
         )
     }

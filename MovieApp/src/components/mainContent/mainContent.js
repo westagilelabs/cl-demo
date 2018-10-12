@@ -32,24 +32,26 @@ class MainContent extends Component {
                     <Nav tabs>
                         {tabContents.map((e,key) => {
                             return <NavItem key={key}>
-                                <NavLink
-                                    className={classnames({ active: this.state.activeTab === e.index })}
-                                    onClick={() => {this.toggle(e.index)}}
-                                >
-                                    <i className={e.icon}></i>
-                                    <span>{e.title}</span>
-                                </NavLink>
-                            </NavItem>
-                        })}
+                                    <NavLink
+                                        className={classnames({ active: this.state.activeTab === e.index })}
+                                        onClick={() => {this.toggle(e.index)}}
+                                    >
+                                        <i className={e.icon}></i>
+                                        <span>{e.title}</span>
+                                    </NavLink>
+                                </NavItem>
+                            })
+                        }
                     </Nav>
                 </div>
                 <div className="content-section">
                     <TabContent activeTab={this.state.activeTab}>
                         {tabContents.map((e, key) => {
-                        return <TabPane key={key} tabId={e.index}>
-                                <e.component active={this.state.activeTab === e.index}/>
-                            </TabPane>
-                        })}
+                            return <TabPane key={key} tabId={e.index}>
+                                    <e.component active={this.state.activeTab === e.index}/>
+                                </TabPane>
+                            })
+                        }
                     </TabContent>
                 </div>
             </div>
