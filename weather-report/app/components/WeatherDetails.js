@@ -28,6 +28,17 @@ export default class WeatherDetails extends Component {
     }
   }
 
+  getTimeFromTimeStamp(timeStamp){
+    let date = new Date(timeStamp);
+// Hours part from the timestamp
+    let hours = date.getUTCHours();
+// Minutes part from the timestamp
+    let minutes = "0" + date.getUTCMinutes();
+// Seconds part from the timestamp
+    let seconds = "0" + date.getUTCSeconds();
+    return(hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2));
+  }
+
   componentWillUnmount() {
     // this.props.clearStates();
   }
@@ -48,8 +59,8 @@ export default class WeatherDetails extends Component {
       cloudiness = this.props.results.clouds.all,
       pressure = this.props.results.main.pressure,
       humidity = this.props.results.main.humidity,
-      sunrise = this.props.results.sys.sunrise,
-      sunset = this.props.results.sys.sunset,
+      sunrise = this.getTimeFromTimeStamp(this.props.results.sys.sunrise),
+      sunset =this.getTimeFromTimeStamp(this.props.results.sys.sunset),
       lon = this.props.results.coord.lon,
       lat = this.props.results.coord.lat;
     return (
@@ -89,7 +100,7 @@ export default class WeatherDetails extends Component {
               <span> Humidity </span> <span> {humidity} </span>
             </div>
             <div>
-              <span> Sunrise </span> <span> {sunrise}</span>
+              <span> Sunrise </span> <span> {sunrise} </span>
             </div>
             <div>
               <span> Sunset </span> <span> {sunset}</span>
