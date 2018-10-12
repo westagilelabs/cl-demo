@@ -2,27 +2,8 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
 import {Row,Col, Label,Form, Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle} from 'reactstrap';
-=======
-import {
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  Row,
-  Col,
-  Label,
-  Form,
-  Button,
-  Card,
-  CardImg,
-  CardText,
-  CardBody,
-  CardTitle,
-  CardSubtitle
-} from 'reactstrap';
->>>>>>> 84dfea64c4e8fab6d70c5e9cfe73b8d19870355c
 import styles from './Weather.css';
 import routes from '../constants/routes';
 import BgImage from '../assets/images/clouds.gif'
@@ -73,7 +54,6 @@ export default class Weather extends Component<Props> {
       );
     }
     return (
-<<<<<<< HEAD
       <div className={styles.weatherDetailsWrapper}>
         <img src={BgImage} className={styles.cloudsImage}/>
         <small className={styles.cloudBg}></small>
@@ -105,41 +85,6 @@ export default class Weather extends Component<Props> {
             </Row>
           </div>
         </div>
-=======
-      <div>
-        <div className={styles.backButton} data-tid="backButton">
-          <Link to={routes.HOME}>
-            <i className="fa fa-arrow-left fa-3x" />
-          </Link>
-
-          <Form
-            onSubmit={e => {
-              e.preventDefault();
-              this.props.fetchWeather(e);
-            }}
-            id="searchForm"
-            noValidate
-          >
-            <Label for="searchTextBox">
-              Search the weather of a city/location
-            </Label>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend" />
-              <Input
-                type="text"
-                id="searchTextBox"
-                name="searchTextBox"
-                value="Pune"
-                onChange={this.props.setSearchPhrase}
-                placeholder="Search"
-              />
-            </InputGroup>
-
-            <Button type="submit">Search</Button>
-          </Form>
-        </div>
-        <Row>{cityWeather}</Row>
->>>>>>> 84dfea64c4e8fab6d70c5e9cfe73b8d19870355c
       </div>
     );
   }
