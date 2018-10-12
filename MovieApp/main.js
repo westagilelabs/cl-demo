@@ -1,6 +1,5 @@
-
 const {app, BrowserWindow, ipcMain} = require('electron');
-// const { sequelize, TodoItemModel } = require('./src/models');
+const { sequelize, topRated, nowPlaying, trending, upComing } = require('./src/models');
 
 let mainWindow
 
@@ -17,9 +16,9 @@ function createWindow () {
 }
 
 app.on('ready', () => {
-//   sequelize.sync().then( () => {
-// });
+  sequelize.sync().then( () => {
     createWindow();
+  });
 })
 
 app.on('window-all-closed', function () {
@@ -34,9 +33,71 @@ app.on('activate', function () {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-ipcMain.on("searchRequest", (event, data) => {
-  console.log('////////////////////////////******* search *******/////////////////////')
-  
+ipcMain.on('trending', (e, data) => {
+  console.log('/////////********* trending ********///////////')
+  data.forEach(e => {
+    trending.findOne({
+      where : {
+        movieId : e.id
+      }
+    })
+    .then(movie => {
+      if(!movie) {
+        console.log('////////******* movie has been added ******/////////')
+        return trending.create({
+          name : e.title,
+          movieId : e.id,
+          imagePath : e.poster_path,
+          overview : e.overview,
+          releaseDate : e.release_date,
+          rating : e.vote_average
+        })
+      }
+    })
+    .then(movie => {
+      mainWindow.webContents.send('trendingCreated',movie)
+    })
+    .catch(error => {
+      console.log(error)
+    });
+  })
+})
+ipcMain.on('nowPlaying', (e, data) => {
+  nowPlaying.create({
+    name : data.title,
+    movieId : data.id,
+    imagePath : data.poster_path,
+    overview : data.overview,
+    releaseDate : data.release_date,
+    rating : data.vote_average
+  })
+  .then(movie => {
+    mainWindow.webContents.send('nowPlayingCreated',movie)
+  })
+})
+ipcMain.on('upComing', (e, data) => {
+  upComing.create({
+    name : data.title,
+    movieId : data.id,
+    imagePath : data.poster_path,
+    overview : data.overview,
+    releaseDate : data.release_date,
+    rating : data.vote_average
+  })
+  .then(movie => {
+    mainWindow.webContents.send('upComingCreated',movie)
+  })
+})
+ipcMain.on('topRated', (e, data) => {
+  topRated.create({
+    name : data.title,
+    movieId : data.id,
+    imagePath : data.poster_path,
+    overview : data.overview,
+    releaseDate : data.release_date,
+    rating : data.vote_average
+  })
+  .then(movie => {
+    mainWindow.webContents.send('topRatedCreated',movie)
+  })
 })
