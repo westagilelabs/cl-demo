@@ -1,0 +1,6 @@
+{
+    "database": "s3Uploader",
+    "username": "root",
+    "password": "root",
+    "host": "localhost"
+}

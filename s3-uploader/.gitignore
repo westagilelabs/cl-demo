@@ -27,8 +27,9 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 app/node_modules
-api/node_modules
-api/uploads
+node-api/node_modules
+node-api/uploads
+node-api/testImages
 .env
 
 # OSX
