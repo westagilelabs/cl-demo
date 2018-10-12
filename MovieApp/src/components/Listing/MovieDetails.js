@@ -3,9 +3,10 @@ import {
     Card, CardImg, CardText, CardBody,
     CardTitle, Row, Col 
 } from 'reactstrap'; 
-import { apiKey } from '../../config/config'
+import { apiKey, guestSessionId } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Link } from "react-router-dom";
+import Rating from './Rating'
 
 
 class MovieDetails extends Component {
@@ -14,7 +15,8 @@ class MovieDetails extends Component {
         console.log(this.props)
         this.state = {
             movieDetails : {},
-            id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2])
+            id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2]),
+            rating : 0
         }
         this.getMovieDetails = this.getMovieDetails.bind(this)
     }
@@ -37,23 +39,37 @@ class MovieDetails extends Component {
             console.log(error)
         })
     }
+    setRating = (data) => {
+        axiosInstance ({
+            method : 'POST',
+            url : `movie/${this.state.id}/rating?api_key=${apiKey}&guest_session_id=${guestSessionId}`,
+            data : {
+                value : data
+            }
+        })
+        .then(res => {
+            console.log(res)
+        })
+        .catch (error => {
+            console.log(error)
+        })
+    }
     render () {
         return (
             <div  className="container-fluid">
             <Link to={{pathname:'/'}}>home</Link>
                 <h1>Movie details</h1>
+                <Rating setRating = {this.setRating()}/>
                 {Object.keys(this.state.movieDetails).length > 0  ? 
-                    <Row>
-                    <Col  md="4" sm="12" >
+                    <div className="movie-details-wrapper">
                         <Card>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path}`} alt={this.state.movieDetails.title} />
                             <CardBody>
-                            <CardTitle>{this.state.movieDetails.title}</CardTitle>
-                            <CardText >{this.state.movieDetails.overview}</CardText>
+                                <CardTitle>{this.state.movieDetails.title}</CardTitle>
+                                <CardText >{this.state.movieDetails.overview}</CardText>
                             </CardBody>
                         </Card>
-                    </Col>
-                </Row>
+                    </div>
                 : null}
             </div>
         )
