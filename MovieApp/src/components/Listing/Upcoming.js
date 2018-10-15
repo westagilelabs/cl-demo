@@ -94,6 +94,7 @@ class UpComing extends Component {
                 {this.state.setPage ? this.getUpComingMovies() : null}            
                 <h1>UpComing Movies</h1>
                 {this.state.upComing.length > 0 ? 
+                <div className="container-fluid">
                 <Row>
                     {this.state.upComing.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
@@ -107,6 +108,7 @@ class UpComing extends Component {
                     </Col>
                     })}
                 </Row>
+                </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
                 <div>

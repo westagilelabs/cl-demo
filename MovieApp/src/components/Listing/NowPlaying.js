@@ -94,6 +94,7 @@ class NowPlaying extends Component {
                 {this.state.setPage ? this.getNowPlayingMovies() : null}
                 <h1>Now Playing Movies</h1>
                 {this.state.nowPlaying.length > 0 ? 
+                <div className="movies-wrapper">
                     <Row>
                         {this.state.nowPlaying.map((e, key) => {
                             return <Col  md="4" sm="12" key = {key} >
@@ -107,6 +108,7 @@ class NowPlaying extends Component {
                         </Col>
                         })}
                     </Row>
+                    </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
                 <div>

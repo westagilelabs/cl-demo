@@ -19,7 +19,7 @@ export var  tabContents = [
     },
     {
         index : 3,
-        icon : 'as fa-film',
+        icon : 'fas fa-film',
         title : "Now Playing",
         component : NowPlaying
     },

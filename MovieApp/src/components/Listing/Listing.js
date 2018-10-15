@@ -95,20 +95,21 @@ class Listing extends Component {
             <div className="container-fluid">
             {this.state.setPage ? this.getTrendingMovies() : null}
                 <h1>Trending Movies</h1>
-                {this.state.trendingMovies.length > 0 ? 
-                <Row>
-                    {this.state.trendingMovies.map((e, key) => {
-                        return <Col  md="4" sm="12" key = {key} >
-                        <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
-                            <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
-                            <CardBody>
-                            <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
-                            <CardText >{e.overview || e.dataValues.overview}</CardText>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    })}
-                </Row>
+                    <div className="movies-wrapper">
+                        <Row>
+                                {this.state.trendingMovies.map((e, key) => {
+                                return <Col  md="4" sm="12" key = {key} >
+                                <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
+                                    <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
+                                    <CardBody>
+                                    <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
+                                    <CardText >{e.overview || e.dataValues.overview}</CardText>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                            })}
+                        </Row>
+                    </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
                 <div>
