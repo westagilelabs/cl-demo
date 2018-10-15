@@ -1,0 +1,80 @@
+.container {
+  width: 80%;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+body {
+  background-image: linear-gradient(to right,#000046 , #1CB5E0);
+  font-size: 1rem;
+}
+body p, body p span {
+color: #fff;
+}
+.heading {
+  text-align: center;
+  font-size: 1.875rem;
+  color: #fff;
+}
+
+.container h2 {
+  font-size: 5rem;
+}
+
+.container a, .container p  {
+  font-size: 1rem;
+  color: #202124;
+}
+ul {
+  padding: 0;
+}
+ul li {
+  margin-bottom: 20px;
+}
+.seperator {
+  padding: 10px;
+}
+.headlinesContainer {
+  display: flex;
+}
+.leftNewsPanel {
+  width: 90%;
+}
+.leftNewsPanel p {
+  color: #fff;
+}
+.rightImagePanel {
+  width: 10%;
+}
+.rightImagePanel img {
+  width: 100%;
+  height: 100px;
+}
+.newsWrapper {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.navwrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+.navwrapper input, .navwrapper select {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 13px;
+  margin-right: 1rem;
+}
+.searchContainer {
+  position: relative;
+}
+.searchContainer span { 
+  position: absolute;
+  right: 25px;
+  top: 8px;
+}
+#foo {
+  display:inline-flex;
+   width:640px;
+   height:480px
+}

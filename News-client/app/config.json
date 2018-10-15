@@ -1,0 +1,10 @@
+{
+  "database": "newsclient",
+  "author": "author",
+  "source": "source",
+  "title": "title",
+  "imageURL": "imageURL",
+  "newsURL": "newsURL",
+  "createdDate": "createdDate",
+  "storageFile": "newsclient.sqlite"
+}
