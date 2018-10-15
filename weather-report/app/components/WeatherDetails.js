@@ -7,7 +7,7 @@ import Chart from 'react-google-charts';
 import styles from './Weather.css';
 import routes from '../constants/routes';
 
-let tempData = [['day', 'Temperature']];
+// let tempData = [['day', 'Temperature']];
 const options = {
   hAxis: {
     title: 'Day'
@@ -28,6 +28,14 @@ export default class WeatherDetails extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevStates){
+
+    // if(prevProps.forecast.length !== this.props.forecast.length){
+    //   tempData = [['day', 'Temperature']];
+    // }
+
+  }
+
   getTimeFromTimeStamp(timeStamp){
     let date = new Date(timeStamp);
 // Hours part from the timestamp
@@ -44,7 +52,9 @@ export default class WeatherDetails extends Component {
   }
 
   render() {
+    let tempData = [['day', 'Temperature']];
     if (this.props.forecast) {
+
       let temp, date, description, hours;
       this.props.forecast.list.map(forecast => {
         console.log(JSON.stringify(forecast));
@@ -91,7 +101,7 @@ export default class WeatherDetails extends Component {
               <span> Wind </span> <span> {wind} m/s</span>
             </div>
             <div>
-              <span> Cloudiness </span> <span> {cloudiness}</span>
+              <span> Cloudiness </span> <span> {cloudiness} </span>
             </div>
             <div>
               <span> Pressure </span> <span> {pressure} </span>
@@ -103,7 +113,7 @@ export default class WeatherDetails extends Component {
               <span> Sunrise </span> <span> {sunrise} </span>
             </div>
             <div>
-              <span> Sunset </span> <span> {sunset}</span>
+              <span> Sunset </span> <span> {sunset} </span>
             </div>
             <div>
               <span> Geo Coords </span> <span> {`[${lon},${lat}]`} </span>

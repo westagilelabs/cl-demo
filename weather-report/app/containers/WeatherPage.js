@@ -16,6 +16,13 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchWeather: async event => {
       const results = await fetchWeatherData(event.target[0].value);
+      await dispatch(()=>{
+        new Promise(resolve => {
+          resolve(
+            dispatch({ type: 'CLEAR_WEATHER_STATE' })
+          )
+        })
+      });
       await dispatch(
         () =>
           new Promise(resolve => {
