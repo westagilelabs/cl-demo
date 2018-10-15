@@ -31,7 +31,6 @@ class TopRated extends Component {
     }
     seeResponse () {
         ipcRenderer.on("topRatedCreated",(e, data) => {
-            console.log(data)
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -59,7 +58,6 @@ class TopRated extends Component {
                     url : `movie/top_rated?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    console.log(res.data)
                     ipcRenderer.send('topRated',res.data.results)
                     this.seeResponse()
                     this.setState ({
@@ -78,7 +76,6 @@ class TopRated extends Component {
                 }
                 ipcRenderer.send('topRatedFind', data)
                 ipcRenderer.on('topRatedData', (e, data) => {
-                    console.log(data)
                     this.setState ({
                         topRated : data,
                         totalPages : data.length/20,
@@ -97,8 +94,8 @@ class TopRated extends Component {
                 <Row>
                     {this.state.topRated.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
-                        <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
-                            <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
+                        <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
+                            <CardImg top width="100px"  src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
                             <CardBody>
                             <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
                             <CardText >{e.overview || e.dataValues.overview}</CardText>
@@ -109,7 +106,7 @@ class TopRated extends Component {
                 </Row>
                 </div>
                 : <p>No Records</p>}
-                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'topRated'}}}/> : null }
                 <div>
                     <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {20} onSelect = {this.setPage}/>
                 </div>

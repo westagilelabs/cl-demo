@@ -26,7 +26,6 @@ class Search extends Component {
             url : `search/multi?api_key=${apiKey}&query=${this.state.search}&page=1&include_adult=false`
         })
         .then(res => {
-            console.log(res.data)
             this.setState ({
                 searchResults : res.data.results,
                 page : res.data.page,

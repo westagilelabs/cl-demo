@@ -274,3 +274,74 @@ ipcMain.on('upComingFind', (e, data) => {
     })
   }
 })
+
+ipcMain.on('findMovieDetails', (e, data) => {
+  if(data.category === '') {
+
+    trending.find({
+      where : {
+        movieId : data.id
+      }
+    })
+    .then(trending => {
+      console.log(trending)
+      mainWindow.webContents.send('movieDetails', trending)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+  if(data.category === 'trending') {
+    trending.find({
+      where : {
+        movieId : data.id
+      }
+    })
+    .then(trendingMovie => {
+      console.log(trendingMovie)
+      mainWindow.webContents.send('movieDetails', trendingMovie)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+  if(data.category === 'nowPlaying') {
+    nowPlaying.find({
+      where : {
+        movieId : data.id
+      }
+    })
+    .then(nowPlayingMovie => {
+      mainWindow.webContents.send('movieDetails', nowPlayingMovie)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+  if(data.category === 'topRated') {
+    topRated.find({
+      where : {
+        movieId : data.id
+      }
+    })
+    .then(topRatedMovie => {
+      mainWindow.webContents.send('movieDetails', topRatedMovie)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+  if(data.category === 'upComing') {
+    upComing.find({
+      where : {
+        movieId : data.id
+      }
+    })
+    .then(upComingMovie => {
+      mainWindow.webContents.send('movieDetails', upComingMovie)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+})

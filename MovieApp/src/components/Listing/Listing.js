@@ -40,7 +40,6 @@ class Listing extends Component {
                     url : `trending/all/day?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    console.log(res.data)
                     ipcRenderer.send("trending", res.data.results)
                     this.seeResponse()
                     this.setState ({
@@ -60,7 +59,6 @@ class Listing extends Component {
                 }
                 ipcRenderer.send('trendingFind', data)
                 ipcRenderer.on('trendingData', (e, data) => {
-                    console.log(data)
                     this.setState ({
                         trendingMovies : data,
                         totalPages : data.length/20,
@@ -71,7 +69,6 @@ class Listing extends Component {
     }
     seeResponse () {
         ipcRenderer.on("trendingCreated",(e, data) => {
-            console.log(data)
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -95,12 +92,13 @@ class Listing extends Component {
             <div className="container-fluid">
             {this.state.setPage ? this.getTrendingMovies() : null}
                 <h1>Trending Movies</h1>
+                {this.state.trendingMovies.length > 0 ? 
                     <div className="movies-wrapper">
                         <Row>
                                 {this.state.trendingMovies.map((e, key) => {
                                 return <Col  md="4" sm="12" key = {key} >
-                                <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
-                                    <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
+                                <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
+                                    <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
                                     <CardBody>
                                     <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
                                     <CardText >{e.overview || e.dataValues.overview}</CardText>
@@ -111,7 +109,7 @@ class Listing extends Component {
                         </Row>
                     </div>
                 : <p>No Records</p>}
-                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                {this.state.movieDetail ? <Redirect push from='/trending' to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'trending'}}}/> : null }
                 <div>
                     <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {this.state.totalPages} onSelect = {this.setPage}/>
                 </div>

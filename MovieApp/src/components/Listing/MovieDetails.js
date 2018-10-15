@@ -6,13 +6,13 @@ import {
 import { apiKey, guestSessionId } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Link } from "react-router-dom";
-import Rating from './Rating'
-
+import Rating from './Rating';
+const { ipcRenderer } = window.require('electron');
+const isOnline = require('is-online');
 
 class MovieDetails extends Component {
     constructor (props) {
         super (props) 
-        console.log(this.props)
         this.state = {
             movieDetails : {},
             id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2]),
@@ -26,18 +26,35 @@ class MovieDetails extends Component {
     }
 
     getMovieDetails () {
-        axiosInstance ({
-            method : 'GET',
-            url : `movie/${this.state.id}?api_key=${apiKey}`
+        isOnline()
+        .then(online => {
+            if(online) {
+                axiosInstance ({
+                    method : 'GET',
+                    url : `movie/${this.state.id}?api_key=${apiKey}`
+                })
+                .then(res => {
+                    this.setState ({
+                        movieDetails : res.data
+                    })
+                })
+                .catch (error => {
+                    console.log(error)
+                })
+            } else {
+                var data = {
+                    id : this.state.id,
+                    category : this.props.location.state ? this.props.location.state.category : ''
+                }
+                ipcRenderer.send('findMovieDetails', data)
+                ipcRenderer.on('movieDetails', (e, data) => {
+                    this.setState ({
+                        movieDetails : data.dataValues
+                    })
+                })
+            }
         })
-        .then(res => {
-            this.setState ({
-                movieDetails : res.data
-            })
-        })
-        .catch (error => {
-            console.log(error)
-        })
+        
     }
     setRating = (data) => {
         axiosInstance ({
@@ -48,7 +65,7 @@ class MovieDetails extends Component {
             }
         })
         .then(res => {
-            console.log(res)
+            console.log('rating is done')
         })
         .catch (error => {
             console.log(error)
@@ -59,13 +76,13 @@ class MovieDetails extends Component {
             <div  className="container-fluid">
             <Link to={{pathname:'/'}}>home</Link>
                 <h1>Movie details</h1>
-                <Rating setRating = {this.setRating()}/>
+                {/* <Rating setRating = {this.setRating()}/> */}
                 {Object.keys(this.state.movieDetails).length > 0  ? 
                     <div className="movie-details-wrapper">
                         <Card>
-                            <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path}`} alt={this.state.movieDetails.title} />
+                            <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path || this.state.movieDetails.imagePath}`} alt={this.state.movieDetails.title} />
                             <CardBody>
-                                <CardTitle>{this.state.movieDetails.title}</CardTitle>
+                                <CardTitle>{this.state.movieDetails.title || this.state.movieDetails.name}</CardTitle>
                                 <CardText >{this.state.movieDetails.overview}</CardText>
                             </CardBody>
                         </Card>

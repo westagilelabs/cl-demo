@@ -45,7 +45,6 @@ class NowPlaying extends Component {
                     url : `movie/now_playing?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    console.log(res.data)
                     ipcRenderer.send("nowPlaying", res.data.results)
                     this.seeResponse ()
                     this.setState ({
@@ -64,7 +63,6 @@ class NowPlaying extends Component {
                 }
                 ipcRenderer.send('nowPlayingFind', data)
                 ipcRenderer.on('nowPlayingData', (e, data) => {
-                    console.log(data)
                     this.setState ({
                         nowPlaying : data,
                         totalPages : data.length/20,
@@ -75,7 +73,6 @@ class NowPlaying extends Component {
     }
     seeResponse () {
         ipcRenderer.on("nowPlayingCreated",(e, data) => {
-            console.log(data)
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -98,8 +95,8 @@ class NowPlaying extends Component {
                     <Row>
                         {this.state.nowPlaying.map((e, key) => {
                             return <Col  md="4" sm="12" key = {key} >
-                                <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
-                                    <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
+                                <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
+                                    <CardImg top width="100px"  src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
                                     <CardBody>
                                     <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
                                     <CardText >{e.overview || e.dataValues.overview}</CardText>
@@ -110,7 +107,7 @@ class NowPlaying extends Component {
                     </Row>
                     </div>
                 : <p>No Records</p>}
-                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId}}}/> : null }
+                {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'nowPlaying'}}}/> : null }
                 <div>
                     <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {this.state.totalPages} onSelect = {this.setPage}/>
                 </div>
