@@ -6,7 +6,7 @@ import {
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
-import { Pagination } from 'react-materialize'
+import PaginationComp from './Pagination'
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 class UpComing extends Component {
@@ -43,7 +43,7 @@ class UpComing extends Component {
             }
         })
     }
-    setPage (e) {
+    setPage = (e) => {
         this.setState ({
             page : e,
             setPage : true
@@ -80,6 +80,7 @@ class UpComing extends Component {
                     this.setState ({
                         upComing : data,
                         totalPages : data.length/20,
+                        setPage : false
                     })
                 })
             }
@@ -108,9 +109,7 @@ class UpComing extends Component {
                 </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'upComing'}}}/> : null }
-                <div>
-                    <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {20} onSelect = {this.setPage}/>
-                </div>
+                <PaginationComp totalPages={this.state.totalPages} page={this.state.page} setPage={this.setPage}/>
             </div>
         )
     }
