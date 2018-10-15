@@ -47,14 +47,17 @@ class MovieDetails extends Component {
                     category : this.props.location.state ? this.props.location.state.category : ''
                 }
                 ipcRenderer.send('findMovieDetails', data)
-                ipcRenderer.on('movieDetails', (e, data) => {
-                    this.setState ({
-                        movieDetails : data.dataValues
-                    })
-                })
+                this.setDetails ()
             }
         })
         
+    }
+    setDetails () {
+        ipcRenderer.on('movieDetails', (e, data) => {
+            this.setState ({
+                movieDetails : data.dataValues
+            })
+        })
     }
     setRating = (data) => {
         axiosInstance ({
@@ -74,9 +77,9 @@ class MovieDetails extends Component {
     render () {
         return (
             <div  className="container-fluid">
-            <Link to={{pathname:'/'}}>home</Link>
+            <Link to={{pathname:'/', category : this.props.location.state.category}}>home</Link>
                 <h1>Movie details</h1>
-                {/* <Rating setRating = {this.setRating()}/> */}
+                <Rating setRating = {this.setRating}/>
                 {Object.keys(this.state.movieDetails).length > 0  ? 
                     <div className="movie-details-wrapper">
                         <Card>

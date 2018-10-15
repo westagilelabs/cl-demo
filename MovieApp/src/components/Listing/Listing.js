@@ -6,7 +6,6 @@ import {
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
-import { Pagination } from 'react-materialize'
 import Sorting from '../Sorting/Sorting'
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
@@ -85,7 +84,6 @@ class Listing extends Component {
             page : e,
             setPage : true
         })
-        this.getTrendingMovies ()
     }
     render () {
         return (
@@ -110,9 +108,6 @@ class Listing extends Component {
                     </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push from='/trending' to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'trending'}}}/> : null }
-                <div>
-                    <Pagination className = "pagination" item = {this.state.totalPages} activePage = {this.state.page} maxButtons = {this.state.totalPages} onSelect = {this.setPage}/>
-                </div>
             </div>
         )
     }

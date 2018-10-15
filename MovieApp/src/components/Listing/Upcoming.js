@@ -48,7 +48,6 @@ class UpComing extends Component {
             page : e,
             setPage : true
         })
-        this.getUpComingMovies ()
     }
     getUpComingMovies () {
         isOnline()

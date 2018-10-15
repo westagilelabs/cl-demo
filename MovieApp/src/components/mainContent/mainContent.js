@@ -22,7 +22,24 @@ class MainContent extends Component {
     }
 
     componentDidMount(){
-        this.toggle(1)
+        console.log(this.props)
+        if(this.props.location) {
+
+            if(this.props.location.category === 'trending') {
+                this.toggle(1)
+            }
+            if(this.props.location.category === 'topRated') {
+                this.toggle(2)
+            }
+            if(this.props.location.category === 'nowPlaying') {
+                this.toggle(3)
+            }
+            if(this.props.location.category === 'upComing') {
+                this.toggle(4)
+            }
+        } else {
+            this.toggle(1)
+        }
     }
 
     render() {

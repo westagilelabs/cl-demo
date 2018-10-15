@@ -47,7 +47,6 @@ class TopRated extends Component {
             page : e,
             setPage : true
         })
-        this.getTopratedMovies ()
     }
     getTopratedMovies () {
         isOnline()

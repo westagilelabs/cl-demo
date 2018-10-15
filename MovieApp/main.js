@@ -111,7 +111,6 @@ ipcMain.on('trending', (e, data) => {
         })
         .then(movie => {
           console.log('/////////// created trending //////////////')
-          console.log(movie)
           mainWindow.webContents.send('trendingCreated',movie)
         })
         .catch(error => {
@@ -230,7 +229,6 @@ ipcMain.on('trendingFind', (e, data) => {
       offset: (data.page - 1) * 20
     })
     .then(trending => {
-      // console.log(trending)
       mainWindow.webContents.send('trendingData', trending)
     })
   }
@@ -243,7 +241,6 @@ ipcMain.on('topRatedFind', (e, data) => {
       offset: (data.page - 1) * 20
     })
     .then(topRated => {
-      // console.log(trending)
       mainWindow.webContents.send('topRatedData', topRated)
     })
   }
@@ -256,7 +253,6 @@ ipcMain.on('nowPlayingFind', (e, data) => {
       offset: (data.page - 1) * 20
     })
     .then(nowPlaying => {
-      // console.log(trending)
       mainWindow.webContents.send('nowPlayingData', nowPlaying)
     })
   }
@@ -269,7 +265,6 @@ ipcMain.on('upComingFind', (e, data) => {
       offset: (data.page - 1) * 20
     })
     .then(upComing => {
-      // console.log(trending)
       mainWindow.webContents.send('upComingData', upComing)
     })
   }
@@ -277,14 +272,12 @@ ipcMain.on('upComingFind', (e, data) => {
 
 ipcMain.on('findMovieDetails', (e, data) => {
   if(data.category === '') {
-
     trending.find({
       where : {
         movieId : data.id
       }
     })
     .then(trending => {
-      console.log(trending)
       mainWindow.webContents.send('movieDetails', trending)
     })
     .catch(error => {
@@ -298,7 +291,6 @@ ipcMain.on('findMovieDetails', (e, data) => {
       }
     })
     .then(trendingMovie => {
-      console.log(trendingMovie)
       mainWindow.webContents.send('movieDetails', trendingMovie)
     })
     .catch(error => {

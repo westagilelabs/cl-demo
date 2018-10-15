@@ -83,7 +83,6 @@ class NowPlaying extends Component {
             page : e,
             setPage : true
         })
-        this.getNowPlayingMovies ()
     }
     render () {
         return (
