@@ -42,7 +42,7 @@ export default class Weather extends Component<Props> {
                   {this.props.results.weather[0].description}
                 </Link>{' '}
               </CardTitle>
-              <CardText>
+              {/* <CardText>
                 Temp : from{' '}
                 {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
                 {Math.floor(this.props.results.main.temp_max - 273.15)} °С,
@@ -55,7 +55,7 @@ export default class Weather extends Component<Props> {
               <CardText>
                 Geo coords [{this.props.results.coord.lat},{' '}
                 {this.props.results.coord.lon}]
-              </CardText>
+              </CardText> */}
             </CardBody>
           </Card>
         </Col>
