@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Collapse, Button, CardBody, Card, Input,
-    Form, FormGroup
+    Form, FormGroup, Alert
 } from 'reactstrap';
 
 class Rating extends Component {
@@ -8,11 +8,13 @@ class Rating extends Component {
         super(props);
         this.state = { 
             collapse: false ,
-            input : ''
+            input : '',
+            alert : false
         }
         this.toggle = this.toggle.bind(this);
         this.handleInput = this.handleInput.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.onDismiss = this.onDismiss.bind(this);
     }
 
     toggle() {
@@ -26,11 +28,19 @@ class Rating extends Component {
             input : e.target.value
         })
     }
-    handleSubmit () {
+    handleSubmit (e) {
+        e.preventDefault ()
         this.props.setRating(this.state.input)
         this.setState ({
-            collapse : !this.state.collapse
+            collapse : !this.state.collapse,
+            alert : true
         })
+    }
+
+    onDismiss() {
+        this.setState({ 
+            alert : false 
+        });
     }
 
     render() {
@@ -53,6 +63,9 @@ class Rating extends Component {
                 </CardBody>
             </Card>
             </Collapse>
+            <Alert color="primary" isOpen = {this.state.alert}  toggle={this.onDismiss}>
+                Your rating has been submited
+            </Alert>
         </div>
         );
     }
