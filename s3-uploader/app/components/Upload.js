@@ -2,26 +2,14 @@
 import React, { Component } from 'react';
 import { render } from "react-dom";
 import routes from '../constants/routes';
-import styles from './Upload.global.css';
+import styles from './Upload.global.scss';
 import { Button, Label, Link } from 'react-desktop/macOs';
 import axios from 'axios';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import ReactTable from "react-table";
 import moment from 'moment';
 import S3UploaderModelOperations from './S3UploaderModelOperations';
-
-export class SpinnerComponent extends React.Component{
-  constructor(props){
-    super(props);
-  }
-  render() {
-    return (
-      <div>
-          <img src="spinner.gif"/>
-      </div>
-    );
-  }
-}
+import SpinnerComponent from './preloader/preloader'
 
 export default class Upload extends React.Component{
   constructor(props) {
@@ -32,7 +20,8 @@ export default class Upload extends React.Component{
       update_id: null,
       showSpinner: false,
       rowIndex: null,
-      listOfFiles: []
+      listOfFiles: [],
+      fileName: null
     }
     this.onFormSubmit = this.onFormSubmit.bind(this)
     this.onChange = this.onChange.bind(this)
@@ -254,9 +243,12 @@ export default class Upload extends React.Component{
               this.state.listOfFiles.unshift(modelObj);
               this.setState({listOfFiles: this.state.listOfFiles});
 
-              ToastStore.success(response.data.msg)
+              ToastStore.success(response.data.msg, 30000, 'custom-toast-success')
               this.refs.uploadFile.value = '';
               this.state.file = '';
+              this.setState({
+                  fileName:null
+              })
               this.setState({showSpinner: false});
             }
         });
@@ -266,7 +258,7 @@ export default class Upload extends React.Component{
       }
     })
     .catch((err) => {
-      ToastStore.error(err.response.data.err);
+      ToastStore.error(err.response.data.err, 30000, 'custom-toast-error');
       this.setState({showSpinner: false});
     });
   }
@@ -337,6 +329,9 @@ export default class Upload extends React.Component{
 
   onChange(e) {
     this.setState({file:e.target.files[0]})
+    this.setState({
+      fileName: e.target.files[0].name
+    })
   }
 
   fileUpload(file){
@@ -354,94 +349,95 @@ export default class Upload extends React.Component{
   render() {
     return (
       <div className={styles.container} data-tid="container">
-          <form onSubmit={this.onFormSubmit}>
-            <h1>S3 Uploader</h1>
-            <input type="file" onChange={this.onChange} ref="uploadFile" accept='application/msword, application/pdf, image/*'/>
-            <input type="file" onChange={this.onFileUpdate} ref="selectUpdateFile" style={{display: "none"}} accept='application/msword, application/pdf, image/*'/>
-            <Button color="blue" type="submit">
-              Upload to S3
-            </Button>
-            <br/><br/><br/>
-            <Button color="blue" type="button" onClick={() => this.deleteFile('all', null)}>
-              Delete All Files
-            </Button>
-            <br/><br/>
-            <Button color="blue" type="button" onClick={() => this.dumpData()}>
-              Upload Dummy Data
-            </Button>
-            <br/><br/>
-            <Button color="blue" type="button" onClick={() => this.sync()}>
-              SYNC
-            </Button>
-
-            <ToastContainer store={ToastStore} position={ToastContainer.POSITION.TOP_RIGHT} lightBackground/>
-            { this.state.showSpinner ? <SpinnerComponent/> : null }
-          </form>
-          <br/>
-          <ReactTable
-          data={this.state.listOfFiles}
-          pageSizeOptions= {[5, 10, 20]}
-          defaultPageSize= {10}
-          columns={[
-            {
-              columns: [
-                {
-                  Header: "File Name",
-                  accessor: "file_name",
-                  minWidth: 200
-                },
-                {
-                  Header: "File Type",
-                  accessor: "file_type",
-                  minWidth: 30,
-                  sortable: false
-                },
-                {
-                  Header: "File Size",
-                  accessor: "file_size",
-                  minWidth: 20
-                },
-                {
-                  Header: "Uploaded On",
-                  accessor: "uploaded_on",
-                  minWidth: 50
-                },
-                {
-                  Header: "Action",
-                  Cell: row => (
-                    <div>
-                      <span onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
-                      <span> / </span>
-                      <span onClick={() => this.deleteFile(row.original._id, row.index)}><i className="fas fa-times hover"></i></span>
-                      <span> / </span>
-                      <span onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
-                    </div>
-                  ),
-                  minWidth: 20
-                }
-              ]
-            }
-          ]}
-          className="-striped -highlight"
-          SubComponent={row => {
-            return (
-              <div>
-                <Label>
-                  S3 url :
-                  <Link color="white">
-                    {row.original.s3_url}
-                  </Link>
-                </Label>
-                <Label>
-                  Local url :
-                  <Link color="white">
-                    {row.original.local_url}
-                  </Link>
-                </Label>
+          { this.state.showSpinner ? <SpinnerComponent/> : null }
+          <form className="uploader-form" onSubmit={this.onFormSubmit}>
+            <h3 className="text-center"><i className="fas fa-cloud-upload-alt"></i> S3 Uploader</h3>
+            <div className="upload-input-wrapper">
+              <div className="upload-input">
+                  <input className="uploadable-input d-none" id="uploadLocalFile" name="uploadLocalFile" type="file" onChange={this.onChange} ref="uploadFile" accept='application/msword, application/pdf, image/*'/>
+                  <label htmlFor="uploadLocalFile">{this.state.fileName ? this.state.fileName : "Click here to Upload file.."}</label>
+                  <button type="submit">
+                    Upload to S3
+                  </button>
               </div>
-            )
-          }}
-        />
+              <input type="file" onChange={this.onFileUpdate} ref="selectUpdateFile" style={{display: "none"}} accept='application/msword, application/pdf, image/*'/>
+            </div>
+            <div className="upload-buttons-wrapper d-flex align-items-center justify-content-around">            
+              <button type="button" onClick={() => this.deleteFile('all', null)}>
+                Delete All Files
+              </button>
+              <button type="button" onClick={() => this.dumpData()}>
+                Upload Dummy Data
+              </button>
+              <button type="button" onClick={() => this.sync()}>
+                SYNC
+              </button>
+            </div>
+            <ToastContainer store={ToastStore} position={ToastContainer.POSITION.TOP_RIGHT} lightBackground/>
+          </form>
+          <div className="uploaded-table-wrapper">
+            <ReactTable
+              data={this.state.listOfFiles}
+              pageSizeOptions= {[5, 10, 20]}
+              defaultPageSize= {10}
+              columns={[
+                {
+                  columns: [
+                    {
+                      Header: "File Name",
+                      accessor: "file_name",
+                    },
+                    {
+                      Header: "File Type",
+                      accessor: "file_type",
+                      sortable: false
+                    },
+                    {
+                      Header: "File Size",
+                      accessor: "file_size"
+                    },
+                    {
+                      Header: "Uploaded On",
+                      accessor: "uploaded_on"
+                    },
+                    {
+                      Header: "Action",
+                      Cell: row => (
+                        <div>
+                          <span onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
+                          <span> / </span>
+                          <span onClick={() => this.deleteFile(row.original._id, row.index)}><i className="fas fa-trash hover"></i></span>
+                          <span> / </span>
+                          <span onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
+                        </div>
+                      ),
+                      minWidth: 20
+                    }
+                  ]
+                }
+              ]}
+              className="-striped -highlight"
+              SubComponent={row => {
+                return (
+                  <div className="uploaded-file-details d-flex align-items-center justify-content-around">
+                    <Label>
+                      <small>S3 url :</small>
+                      <Link href={row.original.s3_url} color="white">
+                        {row.original.s3_url}
+                      </Link>
+                    </Label>
+                    <Label>
+                      <small>Local url :</small>
+                      <Link href={row.original.local_url} color="white">
+                        {row.original.local_url}
+                      </Link>
+                    </Label>
+                  </div>
+                )
+              }
+            }
+          />
+        </div>
       </div>
     );
   }
