@@ -14,7 +14,7 @@ class HomePage extends Component {
         return (
             <div className = "homepage">
                 <Header/>
-                <MainContent/>
+                <MainContent category={this.props.location.category}/>
             </div>
         )
     }

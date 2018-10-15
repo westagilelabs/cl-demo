@@ -16,7 +16,8 @@ class MovieDetails extends Component {
         this.state = {
             movieDetails : {},
             id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2]),
-            rating : 0
+            rating : 0,
+            setRating : false
         }
         this.getMovieDetails = this.getMovieDetails.bind(this)
     }
@@ -35,7 +36,8 @@ class MovieDetails extends Component {
                 })
                 .then(res => {
                     this.setState ({
-                        movieDetails : res.data
+                        movieDetails : res.data,
+                        setRating : !this.state.setRating
                     })
                 })
                 .catch (error => {
@@ -77,9 +79,9 @@ class MovieDetails extends Component {
     render () {
         return (
             <div  className="container-fluid">
-            <Link to={{pathname:'/', category : this.props.location.state.category}}>home</Link>
+            <Link to={{pathname:'/', category : this.props.location.state ? this.props.location.state.category : ''}}>home</Link>
                 <h1>Movie details</h1>
-                <Rating setRating = {this.setRating}/>
+                {this.state.setRating ? <Rating setRating = {this.setRating}/> : null}
                 {Object.keys(this.state.movieDetails).length > 0  ? 
                     <div className="movie-details-wrapper">
                         <Card>

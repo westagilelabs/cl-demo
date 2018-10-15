@@ -23,18 +23,17 @@ class MainContent extends Component {
 
     componentDidMount(){
         console.log(this.props)
-        if(this.props.location) {
-
-            if(this.props.location.category === 'trending') {
+        if(this.props.category) {
+            if(this.props.category === 'trending') {
                 this.toggle(1)
             }
-            if(this.props.location.category === 'topRated') {
+            if(this.props.category === 'topRated') {
                 this.toggle(2)
             }
-            if(this.props.location.category === 'nowPlaying') {
+            if(this.props.category === 'nowPlaying') {
                 this.toggle(3)
             }
-            if(this.props.location.category === 'upComing') {
+            if(this.props.category === 'upComing') {
                 this.toggle(4)
             }
         } else {
