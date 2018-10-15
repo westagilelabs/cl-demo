@@ -32,6 +32,7 @@ class Rating extends Component {
         e.preventDefault ()
         this.props.setRating(this.state.input)
         this.setState ({
+            input : '',
             collapse : !this.state.collapse,
             alert : true
         })
@@ -56,6 +57,7 @@ class Rating extends Component {
                         min={0} 
                         placeholder="Rate on 10"
                         type="number"
+                        value = {this.state.input}
                         onChange = {this.handleInput}
                     />
                         </FormGroup>

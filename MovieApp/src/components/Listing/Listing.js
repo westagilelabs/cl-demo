@@ -6,7 +6,7 @@ import {
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
-import Sorting from '../Sorting/Sorting'
+import PaginationComp from './Pagination'
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 
@@ -61,6 +61,7 @@ class Listing extends Component {
                     this.setState ({
                         trendingMovies : data,
                         totalPages : data.length/20,
+                        setPage : false
                     })
                 })
             }
@@ -79,7 +80,7 @@ class Listing extends Component {
             movieId : e
         })
     }
-    setPage (e) {
+    setPage = (e) => {
         this.setState ({
             page : e,
             setPage : true
@@ -88,7 +89,7 @@ class Listing extends Component {
     render () {
         return (
             <div className="container-fluid">
-            {this.state.setPage ? this.getTrendingMovies() : null}
+                {this.state.setPage ? this.getTrendingMovies() : null}
                 <h1>Trending Movies</h1>
                 {this.state.trendingMovies.length > 0 ? 
                     <div className="movies-wrapper">
@@ -108,6 +109,7 @@ class Listing extends Component {
                     </div>
                 : <p>No Records</p>}
                 {this.state.movieDetail ? <Redirect push from='/trending' to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'trending'}}}/> : null }
+                <PaginationComp totalPages={this.state.totalPages} page={this.state.page} setPage={this.setPage}/>
             </div>
         )
     }
