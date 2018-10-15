@@ -9,6 +9,7 @@ import { Redirect } from 'react-router-dom'
 import { Pagination } from 'react-materialize'
 import Sorting from '../Sorting/Sorting'
 const { ipcRenderer } = window.require('electron');
+const isOnline = require('is-online');
 
 
 class Listing extends Component {
@@ -31,27 +32,49 @@ class Listing extends Component {
             }
     }
     getTrendingMovies () {
-        axiosInstance ({
-            method : 'GET',
-            url : `trending/all/day?api_key=${apiKey}&page=${this.state.page}`
-        })
-        .then(res => {
-            console.log(res.data)
-            ipcRenderer.send("trending", res.data.results)
-            this.setState ({
-                trendingMovies : res.data.results,
-                page : res.data.page,
-                totalPages : res.data.total_pages,
-                setPage : false
-            })
-            ipcRenderer.on("trendingCreated",(e, data) => {
-                if(data.length > 0) {
-                    console.log('///////// data added to db ////////')
+        isOnline()
+        .then(online => {
+            if(online) {
+                axiosInstance ({
+                    method : 'GET',
+                    url : `trending/all/day?api_key=${apiKey}&page=${this.state.page}`
+                })
+                .then(res => {
+                    console.log(res.data)
+                    ipcRenderer.send("trending", res.data.results)
+                    this.seeResponse()
+                    this.setState ({
+                        trendingMovies : res.data.results,
+                        page : res.data.page,
+                        totalPages : res.data.total_pages,
+                        setPage : false
+                    })
+                    
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            } else {
+                var data = {
+                    page : this.state.page,
                 }
-            })
+                ipcRenderer.send('trendingFind', data)
+                ipcRenderer.on('trendingData', (e, data) => {
+                    console.log(data)
+                    this.setState ({
+                        trendingMovies : data,
+                        totalPages : data.length/20,
+                    })
+                })
+            }
         })
-        .catch(error => {
-            console.log(error)
+    }
+    seeResponse () {
+        ipcRenderer.on("trendingCreated",(e, data) => {
+            console.log(data)
+            if(data) {
+                console.log('///////// data added to db ////////')
+            }
         })
     }
     setMovieDetail (e) {
@@ -65,6 +88,7 @@ class Listing extends Component {
             page : e,
             setPage : true
         })
+        this.getTrendingMovies ()
     }
     render () {
         return (
@@ -75,11 +99,11 @@ class Listing extends Component {
                 <Row>
                     {this.state.trendingMovies.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
-                        <Card onClick = {() => this.setMovieDetail(e.id)}>
+                        <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
                             <CardBody>
-                            <CardTitle>{e.title}</CardTitle>
-                            <CardText >{e.overview}</CardText>
+                            <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
+                            <CardText >{e.overview || e.dataValues.overview}</CardText>
                             </CardBody>
                         </Card>
                     </Col>

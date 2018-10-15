@@ -9,6 +9,7 @@
     "concurrently": "^4.0.1",
     "electron": "^3.0.3",
     "install": "^0.12.1",
+    "is-online": "^7.0.0",
     "moment": "^2.22.2",
     "npm": "^6.4.1",
     "react": "^16.5.2",

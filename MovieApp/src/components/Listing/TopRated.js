@@ -7,6 +7,8 @@ import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
 import { Pagination } from 'react-materialize'
+const { ipcRenderer } = window.require('electron');
+const isOnline = require('is-online');
 
 class TopRated extends Component {
     constructor (props) {
@@ -27,6 +29,14 @@ class TopRated extends Component {
             this.getTopratedMovies ()
         }
     }
+    seeResponse () {
+        ipcRenderer.on("topRatedCreated",(e, data) => {
+            console.log(data)
+            if(data) {
+                console.log('///////// data added to db ////////')
+            }
+        })
+    }
     setMovieDetail (e) {
         this.setState ({
             movieDetail : true,
@@ -38,23 +48,43 @@ class TopRated extends Component {
             page : e,
             setPage : true
         })
+        this.getTopratedMovies ()
     }
     getTopratedMovies () {
-        axiosInstance ({
-            method : 'GET',
-            url : `movie/top_rated?api_key=${apiKey}&page=${this.state.page}`
-        })
-        .then(res => {
-            console.log(res.data)
-            this.setState ({
-                topRated : res.data.results,
-                page : res.data.page,
-                totalPages : res.data.total_pages,
-                setPage : false
-            })
-        })
-        .catch(error => {
-            console.log(error)
+        isOnline()
+        .then(online => {
+            if(online) {
+                axiosInstance ({
+                    method : 'GET',
+                    url : `movie/top_rated?api_key=${apiKey}&page=${this.state.page}`
+                })
+                .then(res => {
+                    console.log(res.data)
+                    ipcRenderer.send('topRated',res.data.results)
+                    this.seeResponse()
+                    this.setState ({
+                        topRated : res.data.results,
+                        page : res.data.page,
+                        totalPages : res.data.total_pages,
+                        setPage : false
+                    })
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            } else {
+                var data = {
+                    page : this.state.page,
+                }
+                ipcRenderer.send('topRatedFind', data)
+                ipcRenderer.on('topRatedData', (e, data) => {
+                    console.log(data)
+                    this.setState ({
+                        topRated : data,
+                        totalPages : data.length/20,
+                    })
+                })
+            }
         })
     }
     render () {
@@ -66,11 +96,11 @@ class TopRated extends Component {
                 <Row>
                     {this.state.topRated.map((e, key) => {
                         return <Col  md="4" sm="12" key = {key} >
-                        <Card onClick = {() => this.setMovieDetail(e.id)}>
+                        <Card onClick = {() => this.setMovieDetail(e.id || e.datavalues.movieId)}>
                             <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.poster_path}`} alt={e.title} />
                             <CardBody>
-                            <CardTitle>{e.title}</CardTitle>
-                            <CardText >{e.overview}</CardText>
+                            <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
+                            <CardText >{e.overview || e.dataValues.overview}</CardText>
                             </CardBody>
                         </Card>
                     </Col>
