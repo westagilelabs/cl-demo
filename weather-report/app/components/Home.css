@@ -1,0 +1,47 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.cloudBg {
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.cloudsImage {
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  position: absolute;
+}
+.landingWrapper {
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo {
+  font-size: 24px;
+}
+.landingLink {
+  color: #333;
+  font-size: 32px;
+  margin-left: 20px;
+  animation: icon-move 1s infinite ease-in-out both;
+}
+
+@keyframes icon-move {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}

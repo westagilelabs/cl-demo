@@ -1,0 +1,45 @@
+{
+  "name": "movie-app-electron",
+  "version": "0.1.0",
+  "main": "main.js",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.2.0",
+    "axios": "^0.18.0",
+    "concurrently": "^4.0.1",
+    "electron": "^3.0.3",
+    "install": "^0.12.1",
+    "moment": "^2.22.2",
+    "npm": "^6.4.1",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-materialize": "^2.4.6",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "2.0.4",
+    "react-uwp": "^1.2.2",
+    "reactstrap": "^6.5.0",
+    "sequelize": "^4.39.0",
+    "sqlite3": "^4.0.2",
+    "wait-on": "^3.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\""
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "electron-rebuild": "^1.8.2"
+  }
+}
