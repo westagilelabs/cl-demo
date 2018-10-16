@@ -28,23 +28,17 @@ export default class WeatherDetails extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevStates){
+  componentDidUpdate(prevProps, prevStates) {}
 
-    // if(prevProps.forecast.length !== this.props.forecast.length){
-    //   tempData = [['day', 'Temperature']];
-    // }
-
-  }
-
-  getTimeFromTimeStamp(timeStamp){
+  getTimeFromTimeStamp(timeStamp) {
     let date = new Date(timeStamp);
-// Hours part from the timestamp
+    // Hours part from the timestamp
     let hours = date.getUTCHours();
-// Minutes part from the timestamp
-    let minutes = "0" + date.getUTCMinutes();
-// Seconds part from the timestamp
-    let seconds = "0" + date.getUTCSeconds();
-    return(hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2));
+    // Minutes part from the timestamp
+    let minutes = '0' + date.getUTCMinutes();
+    // Seconds part from the timestamp
+    let seconds = '0' + date.getUTCSeconds();
+    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
   }
 
   componentWillUnmount() {
@@ -54,10 +48,8 @@ export default class WeatherDetails extends Component {
   render() {
     let tempData = [['day', 'Temperature']];
     if (this.props.forecast) {
-
       let temp, date, description, hours;
       this.props.forecast.list.map(forecast => {
-        console.log(JSON.stringify(forecast));
         temp = Math.floor(forecast.main.temp - 273.15);
         description = forecast.weather[0].description;
         date = new Date(forecast.dt_txt);
@@ -65,14 +57,14 @@ export default class WeatherDetails extends Component {
         return tempData.push([date, temp]);
       });
     }
-    let wind = this.props.results.wind.speed,
-      cloudiness = this.props.results.clouds.all,
-      pressure = this.props.results.main.pressure,
-      humidity = this.props.results.main.humidity,
-      sunrise = this.getTimeFromTimeStamp(this.props.results.sys.sunrise),
-      sunset =this.getTimeFromTimeStamp(this.props.results.sys.sunset),
-      lon = this.props.results.coord.lon,
-      lat = this.props.results.coord.lat;
+    let wind = this.props.results.windSpeed,
+      cloudiness = this.props.results.clouds,
+      pressure = this.props.results.pressure,
+      humidity = this.props.results.humidity,
+      sunrise = this.getTimeFromTimeStamp(this.props.results.sunrise),
+      sunset = this.getTimeFromTimeStamp(this.props.results.sunset),
+      lon = this.props.results.coordLon,
+      lat = this.props.results.coordLat;
     return (
       <div className="container-fluid">
         <div className={styles.backButton} data-tid="backButton">
@@ -82,8 +74,8 @@ export default class WeatherDetails extends Component {
         </div>
 
         <Row>
-          Weather in {this.props.results.name}, {this.props.results.sys.country}{' '}
-          {Math.floor(this.props.results.main.temp - 273.15)}
+          Weather in {this.props.results.city}, {this.props.results.country}{' '}
+          {Math.floor(this.props.results.temperature - 273.15)}
           °С
         </Row>
         {/*This is temperature graph div*/}

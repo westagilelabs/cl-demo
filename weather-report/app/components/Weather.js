@@ -2,7 +2,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import WeatherDetails from '../containers/WeatherDetailsPage'
+import WeatherDetails from '../containers/WeatherDetailsPage';
 import {
   Row,
   Col,
@@ -17,7 +17,7 @@ import {
 } from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
-import BgImage from '../assets/images/clouds2.gif'
+import BgImage from '../assets/images/clouds2.gif';
 import Preloader from './preloader/preloader';
 
 type Props = {
@@ -28,8 +28,10 @@ export default class Weather extends Component<Props> {
   props: Props;
 
   render() {
-    let cityWeather = '',details;
+    let cityWeather = '',
+      details;
     if (this.props.results) {
+      //todo : rename all the props
       cityWeather = (
         <Col>
           <Card>
@@ -37,30 +39,29 @@ export default class Weather extends Component<Props> {
               <CardTitle>
                 <Link to={routes.WEATHER_DETAILS} replace>
                   {' '}
-                  {this.props.results.name}, {this.props.results.sys.country},{' '}
-                  {Math.floor(this.props.results.main.temp - 273.15)} °С,{' '}
-                  {this.props.results.weather[0].description}
+                  {this.props.results.city}, {this.props.results.country},{' '}
+                  {this.props.results.temperature} °С,{' '}
+                  {this.props.results.description}
                 </Link>{' '}
               </CardTitle>
               <CardText>
-                Temp : from{' '}
-                {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
-                {Math.floor(this.props.results.main.temp_max - 273.15)} °С,
+                Temp : from {this.props.results.temp_min} to{' '}
+                {this.props.results.temp_max} °С,
               </CardText>
               <CardText>
                 {' '}
-                wind {this.props.results.wind.speed} m/s, clouds{' '}
-                {this.props.results.clouds.all} %, 1011 hpa{' '}
+                wind {this.props.results.windSpeed} m/s, clouds{' '}
+                {this.props.results.clouds} %, 1011 hpa{' '}
               </CardText>
               <CardText>
-                Geo coords [{this.props.results.coord.lat},{' '}
-                {this.props.results.coord.lon}]
+                Geo coords [{this.props.results.coordLat},{' '}
+                {this.props.results.coordLon}]
               </CardText>
             </CardBody>
           </Card>
         </Col>
       );
-      details = (<WeatherDetails/>);
+      details = <WeatherDetails />;
     }
     return (
       <div className={styles.weatherDetailsWrapper}>
