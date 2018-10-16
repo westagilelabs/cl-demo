@@ -12,7 +12,11 @@ const topRated = sequelize.define("topRated", {
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
     releaseDate : Sequelize.DATE,
-    rating : Sequelize.INTEGER
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const trending = sequelize.define("trending", {
     name : Sequelize.STRING,
@@ -20,7 +24,11 @@ const trending = sequelize.define("trending", {
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
     releaseDate : Sequelize.DATE,
-    rating : Sequelize.INTEGER
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const nowPlaying = sequelize.define("nowPlaying", {
     name : Sequelize.STRING,
@@ -28,7 +36,11 @@ const nowPlaying = sequelize.define("nowPlaying", {
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
     releaseDate : Sequelize.DATE,
-    rating : Sequelize.INTEGER
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const upComing = sequelize.define("upComing", {
     name : Sequelize.STRING,
@@ -36,7 +48,11 @@ const upComing = sequelize.define("upComing", {
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
     releaseDate : Sequelize.DATE,
-    rating : Sequelize.INTEGER
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 module.exports = {
     sequelize: sequelize,

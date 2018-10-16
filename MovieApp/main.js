@@ -107,7 +107,11 @@ ipcMain.on('trending', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average
+          rating : e.vote_average,
+          tagline : e.tagline,
+          runtime : e.runtime,
+          revenue : e.revenue,
+          language : e.original_language
         })
         .then(movie => {
           console.log('/////////// created trending //////////////')
@@ -142,7 +146,11 @@ ipcMain.on('nowPlaying', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average
+          rating : e.vote_average,
+          tagline : e.tagline,
+          runtime : e.runtime,
+          revenue : e.revenue,
+          language : e.original_language
         })
         .then(movie => {
           mainWindow.webContents.send('nowPlayingCreated',movie)
@@ -174,7 +182,11 @@ ipcMain.on('topRated', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average
+          rating : e.vote_average,
+          tagline : e.tagline,
+          runtime : e.runtime,
+          revenue : e.revenue,
+          language : e.original_language
         })
         .then(movie => {
           mainWindow.webContents.send('topRatedCreated',movie)
@@ -206,7 +218,11 @@ ipcMain.on('upComing', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average
+          rating : e.vote_average,
+          tagline : e.tagline,
+          runtime : e.runtime,
+          revenue : e.revenue,
+          language : e.original_language
         })
         .then(movie => {
           mainWindow.webContents.send('upComingCreated',movie)

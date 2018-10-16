@@ -24,9 +24,11 @@ class Rating extends Component {
     }
 
     handleInput (e) {
-        this.setState ({
-            input : e.target.value
-        })
+        if (e.target.value.length <= 2 && e.target.value <= 10) {
+            this.setState ({
+                input : e.target.value
+            })
+        }
     }
     handleSubmit (e) {
         e.preventDefault ()

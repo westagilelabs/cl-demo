@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { 
-    Card, CardImg, CardText, CardBody,
-    CardTitle, Row, Col 
+    Media 
 } from 'reactstrap'; 
 import { apiKey, guestSessionId } from '../../config/config'
 import axiosInstance from '../axiosInstance'
@@ -84,15 +83,28 @@ class MovieDetails extends Component {
                 {this.state.setRating ? <Rating setRating = {this.setRating}/> : null}
                 {Object.keys(this.state.movieDetails).length > 0  ? 
                     <div className="movie-details-wrapper">
-                        <Card>
-                            <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path || this.state.movieDetails.imagePath}`} alt={this.state.movieDetails.title} />
-                            <CardBody>
-                                <CardTitle>{this.state.movieDetails.title || this.state.movieDetails.name}</CardTitle>
-                                <CardText >{this.state.movieDetails.overview}</CardText>
-                            </CardBody>
-                        </Card>
+                        <Media>
+                            <Media left >
+                                <Media 
+                                    object 
+                                    src={`https://image.tmdb.org/t/p/w500/${this.state.movieDetails.poster_path || this.state.movieDetails.imagePath}`}
+                                    alt={this.state.movieDetails.title} 
+                                />
+                            </Media>
+                            <Media body>
+                                <Media heading>
+                                    Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? - <span style={{fontSize:'15px'}}>this.state.movieDetails.tagline </span> : null}
+                                </Media>
+                                <b style={{fontSize:'18px'}}>Run time </b>: {this.state.movieDetails.runtime} <br/>
+                                <b style={{fontSize:'18px'}}>Revenue </b>: {this.state.movieDetails.revenue} <br/>
+                                <b style={{fontSize:'18px'}}>Release Date </b>: {this.state.movieDetails.release_date} <br/>
+                                <b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average} / 10 <br/>
+                                <b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}
+                            </Media>
+                        </Media>
                     </div>
-                : null}
+                    : null
+                }
             </div>
         )
     }
