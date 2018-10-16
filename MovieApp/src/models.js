@@ -11,32 +11,48 @@ const topRated = sequelize.define("topRated", {
     movieId : Sequelize.INTEGER,
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
-    releaseDate : Sequelize.DATEONLY,
-    rating : Sequelize.INTEGER
+    releaseDate : Sequelize.DATE,
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const trending = sequelize.define("trending", {
     name : Sequelize.STRING,
     movieId : Sequelize.INTEGER,
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
-    releaseDate : Sequelize.DATEONLY,
-    rating : Sequelize.INTEGER
+    releaseDate : Sequelize.DATE,
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const nowPlaying = sequelize.define("nowPlaying", {
     name : Sequelize.STRING,
     movieId : Sequelize.INTEGER,
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
-    releaseDate : Sequelize.DATEONLY,
-    rating : Sequelize.INTEGER
+    releaseDate : Sequelize.DATE,
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 const upComing = sequelize.define("upComing", {
     name : Sequelize.STRING,
     movieId : Sequelize.INTEGER,
     imagePath : Sequelize.STRING,
     overview : Sequelize.TEXT,
-    releaseDate : Sequelize.DATEONLY,
-    rating : Sequelize.INTEGER
+    releaseDate : Sequelize.DATE,
+    rating : Sequelize.INTEGER,
+    tagline : Sequelize.STRING,
+    runtime : Sequelize.INTEGER,
+    revenue : Sequelize.INTEGER,
+    language : Sequelize.STRING
 });
 module.exports = {
     sequelize: sequelize,

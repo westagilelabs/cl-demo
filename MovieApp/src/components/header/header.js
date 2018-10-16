@@ -1,7 +1,28 @@
 import React, { Component } from 'react'
 import Search from '../Search/Search';
+const isOnline = require('is-online')
 
 export default class header extends Component {
+    constructor (props) {
+        super (props)
+        this.state = {
+            search : false
+        }
+    }
+    componentDidMount () {
+        isOnline()
+        .then(online => {
+            if(online) {
+                this.setState ({
+                    search : !this.state.search
+                })
+            } else {
+                this.setState ({
+                    search : this.state.search
+                })
+            }
+        })
+    }
     render() {
         return (
             <header className="navbar fixed-top header-section d-flex align-items-center justify-content-between  container-fluid">
@@ -20,7 +41,7 @@ export default class header extends Component {
                         </span>
                     </div>
                 </div>
-                <Search/>
+                {this.state.search ? <Search/> : null }
             </header>
         )
     }
