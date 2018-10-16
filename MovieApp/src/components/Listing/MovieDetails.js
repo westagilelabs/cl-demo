@@ -93,7 +93,7 @@ class MovieDetails extends Component {
                             </Media>
                             <Media body>
                                 <Media heading>
-                                    Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? - <span style={{fontSize:'15px'}}>this.state.movieDetails.tagline </span> : null}
+                                    Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? (<span style={{fontSize:'15px'}}>{this.state.movieDetails.tagline }</span> ): null}
                                 </Media>
                                 <b style={{fontSize:'18px'}}>Run time </b>: {this.state.movieDetails.runtime} <br/>
                                 <b style={{fontSize:'18px'}}>Revenue </b>: {this.state.movieDetails.revenue} <br/>

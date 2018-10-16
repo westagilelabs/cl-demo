@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { 
     Card, CardImg, CardText, CardBody,
-    CardTitle, Row, Col 
+    CardTitle, Row, Col, Progress 
 } from 'reactstrap'; 
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
@@ -19,7 +19,8 @@ class NowPlaying extends Component {
             totalPages : 1,
             movieDetail : false,
             movieId : 0,
-            setPage : false
+            setPage : false,
+            loading : true
         }
         this.setPage = this.setPage.bind(this)        
     }
@@ -51,7 +52,8 @@ class NowPlaying extends Component {
                         nowPlaying : res.data.results,
                         page : res.data.page,
                         totalPages : res.data.total_pages,
-                        setPage : false
+                        setPage : false,
+                        loading : false
                     })
                 })
                 .catch(error => {
@@ -66,7 +68,8 @@ class NowPlaying extends Component {
                     this.setState ({
                         nowPlaying : data,
                         totalPages : data.length/20,
-                        setPage : false
+                        setPage : false,
+                        loading : false
                     })
                 })
             }
@@ -90,23 +93,28 @@ class NowPlaying extends Component {
             <div className="container-fluid">
                 {this.state.setPage ? this.getNowPlayingMovies() : null}
                 <h1>Now Playing Movies</h1>
-                {this.state.nowPlaying.length > 0 ? 
-                <div className="movies-wrapper">
-                    <Row>
-                        {this.state.nowPlaying.map((e, key) => {
-                            return <Col  md="4" sm="12" key = {key} >
-                                <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
-                                    <CardImg top width="100px"  src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
-                                    <CardBody>
-                                    <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
-                                    <CardText >{e.overview || e.dataValues.overview}</CardText>
-                                    </CardBody>
-                            </Card>
-                        </Col>
-                        })}
-                    </Row>
-                    </div>
-                : <p>No Records</p>}
+                { !this.state.loading ?  
+                    (this.state.nowPlaying.length > 0 ? 
+                        <div className="movies-wrapper">
+                            <Row>
+                                {this.state.nowPlaying.map((e, key) => {
+                                    return <Col  md="4" sm="12" key = {key} >
+                                        <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
+                                            <CardImg top width="100px"  src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
+                                            <CardBody>
+                                            <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
+                                            <CardText >{e.overview || e.dataValues.overview}</CardText>
+                                            </CardBody>
+                                    </Card>
+                                </Col>
+                                })}
+                            </Row>
+                            </div>
+                        : <p>No Records</p>
+                    )
+                    : 
+                    <div><Progress animated color="success" value={2 * 5}/></div>
+                }
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'nowPlaying'}}}/> : null }
                 <PaginationComp totalPages={this.state.totalPages} page={this.state.page} setPage={this.setPage}/>
             </div>
