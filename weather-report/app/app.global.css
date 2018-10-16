@@ -66,3 +66,20 @@ a:hover {
 }
 
 /* eslint-enable */
+.climate-details-wrapper{
+  position: relative;
+}
+.climate-details-wrapper table{
+  margin: 0;
+}
+.climate-details-wrapper table th,
+.climate-details-wrapper table td{
+  border-color: #333;
+}
+.climate-details-wrapper table th,
+.climate-details-wrapper table td{
+  color: #000;
+}
+.climate-details-wrapper + div svg > rect{
+  fill: rgba(255,255,255,0.5) !important;
+}

@@ -31,7 +31,6 @@ export default class Weather extends Component<Props> {
     let cityWeather = '',
       details;
     if (this.props.results) {
-      //todo : rename all the props
       cityWeather = (
         <Col>
           <Card>
@@ -44,19 +43,20 @@ export default class Weather extends Component<Props> {
                   {this.props.results.description}
                 </Link>{' '}
               </CardTitle>
-              <CardText>
-                Temp : from {this.props.results.temp_min} to{' '}
-                {this.props.results.temp_max} °С,
+              {/* <CardText>
+                Temp : from{' '}
+                {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
+                {Math.floor(this.props.results.main.temp_max - 273.15)} °С,
               </CardText>
               <CardText>
                 {' '}
-                wind {this.props.results.windSpeed} m/s, clouds{' '}
-                {this.props.results.clouds} %, 1011 hpa{' '}
+                wind {this.props.results.wind.speed} m/s, clouds{' '}
+                {this.props.results.clouds.all} %, 1011 hpa{' '}
               </CardText>
               <CardText>
-                Geo coords [{this.props.results.coordLat},{' '}
-                {this.props.results.coordLon}]
-              </CardText>
+                Geo coords [{this.props.results.coord.lat},{' '}
+                {this.props.results.coord.lon}]
+              </CardText> */}
             </CardBody>
           </Card>
         </Col>
