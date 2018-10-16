@@ -21,7 +21,7 @@ class PaginationComp extends Component {
     render () {
         return (
             <Pagination aria-label="Page navigation example">
-                <PaginationItem disabled={this.state.currentPage = 1}>
+                <PaginationItem disabled={this.state.currentPage === 1}>
                     <PaginationLink
                         onClick={e => this.props.setPage(this.state.currentPage - 1)}
                         previous
@@ -35,7 +35,7 @@ class PaginationComp extends Component {
                         </PaginationLink>
                     </PaginationItem>
                 })}
-                <PaginationItem disabled={this.props.page == this.props.totalPages }>
+                <PaginationItem disabled={this.props.page === this.props.totalPages }>
                     <PaginationLink 
                         onClick={e => this.props.setPage(this.state.currentPage + 1)}
                         next
