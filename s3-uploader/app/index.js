@@ -7,6 +7,8 @@ import './app.global.css';
 
 const store = configureStore();
 
+const sqlite = require('sqlite3')
+
 render(
   <AppContainer>
     <Root store={store} history={history} />

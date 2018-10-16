@@ -28,8 +28,6 @@ build/Release
 node_modules
 app/node_modules
 node-api/node_modules
-node-api/uploads
-node-api/testImages
 .env
 
 # OSX

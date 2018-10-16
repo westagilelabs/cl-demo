@@ -1,28 +1,5 @@
-const { S3UploaderModel } = require('./S3UploaderModel')
-// import S3UploaderModel from './S3UploaderModel';
+const { S3UploaderModel, sequelize } = require('./S3UploaderModel')
 
-// exports.listAll = async function () {
-//    const items = await TodoItem.findAll ()
-//    return items.map(e => e.toJSON())
-// }
-//
-// exports.updateStatus = async function (id) {
-//    const todo = await TodoItem.findOne({where : { id : id}})
-//    todo.status = !todo.status
-//    return todo.save()
-// }
-//
-// exports.deleteTodo = async function (id) {
-//    const todo = await TodoItem.destroy({where : { id : id }})
-//    return todo
-// }
-//
-// exports.deleteChecked = async function (data) {
-//    const todos = await TodoItem.destroy({
-//        where : {id : data}
-//    })
-//    return todos
-// }
 exports.deleteAllFiles = async function () {
    return await S3UploaderModel.destroy({
       where: {},
@@ -52,7 +29,11 @@ exports.getFileInfoById = async function (id) {
 }
 
 exports.getAllFiles = async function () {
-   const items = await S3UploaderModel.findAll({where: {is_deleted: 0}})
+   const items = await S3UploaderModel.findAll(
+     {
+       where: {is_deleted: 0},order: [['uploaded_on', 'DESC']]
+     }
+   )
    return items.map(e => e.toJSON())
 }
 

@@ -60,7 +60,7 @@ a:hover {
   margin: 0;
 }
 .uploaded-table-wrapper{
-  
+
 }
 .upload-input-wrapper{
 
@@ -141,13 +141,15 @@ a:hover {
 .uploaded-table-wrapper .rt-tbody .rt-td{
   text-align: left;
   flex: 1 !important;
+  display: flex;
+  align-items: center;
 }
 .uploaded-table-wrapper .rt-thead .rt-th:last-child,
 .uploaded-table-wrapper .rt-tbody .rt-td:last-child{
   flex: 0.5!important;
 }
 .uploaded-table-wrapper .rt-tbody .rt-expander{
-  
+
 }
 .uploaded-table-wrapper .rt-tbody .rt-expander::after{
   border-top: 7px solid rgba(255,255,255,0.8);
@@ -161,7 +163,7 @@ a:hover {
   font-size: 12px;
 }
 .uploaded-file-details span a{
-  color: #333 !important;
+  /* color: #333 !important; */
   cursor: pointer !important;
   font-size: 12px !important;
 }
