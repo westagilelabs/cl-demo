@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import classnames from 'classnames';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { NewsList } from '../models';
+import Banner from './Banner';
 
 export default class Home extends Component {
   constructor(Props) {
@@ -99,7 +100,10 @@ export default class Home extends Component {
   getNews() {
 
     let keywords = this.state.searchKeywords
-    let date = this.state.startDate.format("YYYY-MM-DD");
+    let date;
+    if(this.state.startDate){
+      date = this.state.startDate.format("YYYY-MM-DD") ;
+    }
     let sortResult = this.state.result
     console.log(date, 'date ***');
     let params = {
@@ -181,7 +185,7 @@ export default class Home extends Component {
     this.setState (
       (state) => ({
         searchKeywords: "",
-        // startDate: "",
+        startDate: ""
       }), 
       () => {
         this.getNews()
@@ -199,8 +203,8 @@ export default class Home extends Component {
     return (
       <div className={styles.container} data-tid="container">
       {/* {this.state.get ? this.getNews () : null} */}
-      <h3 className={styles.heading}>News Client</h3>
-     
+      <Banner/>  
+    <section className={styles.mainContainer}>   
      <Nav tabs>
           <NavItem>
             <NavLink
@@ -249,7 +253,7 @@ export default class Home extends Component {
                         <ModalHeader toggle={this.toggleModal}>Modal title</ModalHeader>
                         <ModalBody>
                            <webview id="foo" src={country.newsURL}></webview>  
-                           <iframe src={country.newsURL} width="400px" height="400px"></iframe>                       
+                           {/* <iframe src={country.newsURL} width="400px" height="400px"></iframe>                        */}
                         </ModalBody>
                         <ModalFooter>
                           <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
@@ -312,7 +316,7 @@ export default class Home extends Component {
               
           </TabPane>
         </TabContent>
-       
+       </section>
        
       </div>
     );

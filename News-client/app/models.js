@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const sqlite3 = require('sqlite3')
 let config = require("./config.json")
 const sequelize = new Sequelize("main", null, null,  {
   dialect: 'sqlite',
@@ -14,7 +15,7 @@ const NewsList = sequelize.define("news_list", {
   source_url: Sequelize.TEXT,
   created_date: Sequelize.DATEONLY,
 });
-let db = new sqlite3.Database('./db/chinook.db', (err) => {
+let db = new sqlite3.Database('/Users/walindia/Documents/cl-demo/News-client/app/database.db', (err) => {
   if (err) {
     console.error(err.message);
   }
