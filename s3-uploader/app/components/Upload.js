@@ -246,51 +246,61 @@ export default class Upload extends React.Component{
 
   onFormSubmit(e){
     e.preventDefault();
-    if(this.state.file != null)
-    this.setState({showSpinner: true});
-    this.fileUpload(this.state.file).then((response)=>{
-      if(typeof response.data.success != 'undefined' && response.data.success) {
-        let res = response.data.data;
-        let model = {
-          s3_url: res.Location,
-          local_url: res.local_url,
-          file_name: res.Key,
-          file_size: this.state.file.size,
-          file_type: this.state.file.type,
-          action_type: 'NEW_FILE',
-          connectivity: 1
-        }
-        if(typeof response.data.connectivityProb != 'undefined') {
-          model.connectivity = 0;
-          ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
-        }
+    var fileObj = this.state.file;
+    if(fileObj == null) {
+      ToastStore.error('Please select a file to upload.', this.toast_timeout, 'custom-toast-error');
+    } else {
+      if(fileObj.length) this.setState({showSpinner: true});
+      let k = 0;
+      for(let i=0;i<fileObj.length;i++) {
+        this.fileUpload(fileObj[i]).then((response)=>{
+            if(typeof response.data.success != 'undefined' && response.data.success) {
+              let res = response.data.data;
+              let model = {
+                s3_url: res.Location,
+                local_url: res.local_url,
+                file_name: res.Key,
+                file_size: fileObj[i].size,
+                file_type: fileObj[i].type,
+                action_type: 'NEW_FILE',
+                connectivity: 1
+              }
+              if(typeof response.data.connectivityProb != 'undefined') {
+                model.connectivity = 0;
+                ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
+              }
 
-        S3UploaderModelOperations.newFile(model).then( (dbResp) => {
-            if(dbResp) {
-              let modelObj = dbResp.dataValues;
-              modelObj.uploaded_on = this.getLocalTime(dbResp.dataValues.uploaded_on)
-              modelObj.file_size = this.getFileSize(modelObj.file_size)
-              this.state.listOfFiles.unshift(modelObj);
-              this.setState({listOfFiles: this.state.listOfFiles});
+              S3UploaderModelOperations.newFile(model).then( (dbResp) => {
+                  if(dbResp) {
+                    let modelObj = dbResp.dataValues;
+                    modelObj.uploaded_on = this.getLocalTime(dbResp.dataValues.uploaded_on)
+                    modelObj.file_size = this.getFileSize(modelObj.file_size)
+                    this.state.listOfFiles.unshift(modelObj);
+                    this.setState({listOfFiles: this.state.listOfFiles});
 
-              ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success')
-              this.refs.uploadFile.value = '';
-              this.state.file = '';
-              this.setState({
-                  fileName:null
-              })
+                    ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success')
+                    if(fileObj.length === (k+1)) {
+                      this.refs.uploadFile.value = '';
+                      this.state.file = null;
+                      this.setState({
+                          fileName:null
+                      })
+                      this.setState({showSpinner: false});
+                    }
+                    k++;
+                  }
+              });
+            } else {
+              ToastStore.error(response.data.err, this.toast_timeout, 'custom-toast-error');
               this.setState({showSpinner: false});
             }
+        })
+        .catch((err) => {
+          ToastStore.error(err.response.data.err, this.toast_timeout, 'custom-toast-error');
+          this.setState({showSpinner: false});
         });
-      } else {
-        ToastStore.error(response.data.err, this.toast_timeout, 'custom-toast-error');
-        this.setState({showSpinner: false});
       }
-    })
-    .catch((err) => {
-      ToastStore.error(err.response.data.err, this.toast_timeout, 'custom-toast-error');
-      this.setState({showSpinner: false});
-    });
+    }
   }
 
   onFileUpdate(e) {
@@ -360,10 +370,15 @@ export default class Upload extends React.Component{
   }
 
   onChange(e) {
-    console.log(e.target.files);
-    this.setState({file:e.target.files[0]})
+    let selectedFilesObj = e.target.files;
+    let fileNamesArr = [];
+    for(let i=0;i<selectedFilesObj.length;i++) {
+      fileNamesArr.push(selectedFilesObj[i].name);
+    }
+
+    this.setState({file:e.target.files})
     this.setState({
-      fileName: e.target.files[0].name
+      fileName: fileNamesArr.join(',')
     })
   }
 
