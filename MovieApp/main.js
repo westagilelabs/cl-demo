@@ -74,7 +74,7 @@ function deleteData() {
 app.on('ready', () => {
   sequelize.sync().then( () => {
     createWindow()
-    // deleteData ()
+    // deleteData () 
   });
 })
 
@@ -118,6 +118,7 @@ ipcMain.on('trending', (e, data) => {
           mainWindow.webContents.send('trendingCreated',movie)
         })
         .catch(error => {
+          console.log('////////////// trending create arror ///////////////')
           console.log(error)
         });
       } else {
@@ -156,6 +157,7 @@ ipcMain.on('nowPlaying', (e, data) => {
           mainWindow.webContents.send('nowPlayingCreated',movie)
         })
         .catch(error => {
+          console.log('////////////// nowplaying create arror ///////////////')
           console.log(error)
         });
       } else {
@@ -192,6 +194,7 @@ ipcMain.on('topRated', (e, data) => {
           mainWindow.webContents.send('topRatedCreated',movie)
         })
         .catch(error => {
+          console.log('////////////// toprated create arror ///////////////')
           console.log(error)
         });
       } else {
@@ -228,6 +231,7 @@ ipcMain.on('upComing', (e, data) => {
           mainWindow.webContents.send('upComingCreated',movie)
         })
         .catch(error => {
+          console.log('////////////// upcoming create arror ///////////////')
           console.log(error)
         });
       } else {
@@ -240,48 +244,104 @@ ipcMain.on('upComing', (e, data) => {
 ipcMain.on('trendingFind', (e, data) => {
   console.log('//////// trending findall //////////')
   if(data) {
-    trending.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
+    let result
+    let total
+    trending.count()
+    .then(count => {
+      total = count
+      return  trending.findAll({
+        limit : 20,
+        offset: (data.page - 1) * 20
+      })
     })
     .then(trending => {
-      mainWindow.webContents.send('trendingData', trending)
+      result = {
+        count : total,
+        data : trending
+      }
+      mainWindow.webContents.send('trendingData', result)
+    })
+    .catch(error => {
+      console.log('////////////// trending findall arror ///////////////')
+      console.log(error)
     })
   }
 })
 ipcMain.on('topRatedFind', (e, data) => {
   console.log('//////// topRated findall //////////')
   if(data) {
-    topRated.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
+    let result
+    let total
+    topRated.count()
+    .then(count => {
+      total = count
+      return  topRated.findAll({
+        limit : 20,
+        offset: (data.page - 1) * 20
+      })
     })
     .then(topRated => {
-      mainWindow.webContents.send('topRatedData', topRated)
+      result = {
+        count : total,
+        data : topRated
+      }
+      mainWindow.webContents.send('topRatedData', result)
+    })
+    .catch(error => {
+      console.log('////////////// toprated findall arror ///////////////')
+      console.log(error)
     })
   }
 })
 ipcMain.on('nowPlayingFind', (e, data) => {
   console.log('//////// nowPlaying findall //////////')
   if(data) {
-    nowPlaying.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
+    let result
+    let total
+    nowPlaying.count()
+    .then(count => {
+      total = count
+      return nowPlaying.findAll({
+        limit : 20,
+        offset: (data.page - 1) * 20
+      })
     })
     .then(nowPlaying => {
-      mainWindow.webContents.send('nowPlayingData', nowPlaying)
+      result = {
+        data : nowPlaying,
+        count : total
+      }
+      mainWindow.webContents.send('nowPlayingData', result)
+    })
+    .catch(error => {
+      console.log('////////////// noplaying findall arror ///////////////')
+      console.log(error)
     })
   }
 })
 ipcMain.on('upComingFind', (e, data) => {
   console.log('//////// upComing findall //////////')
   if(data) {
-    upComing.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
+    let result
+    let total
+    upComing.count()
+    .then(count => {
+      total = count
+      return  upComing.findAll({
+        limit : 20,
+        offset: (data.page - 1) * 20
+      })
     })
     .then(upComing => {
-      mainWindow.webContents.send('upComingData', upComing)
+      result = {
+        count : total,
+        data : upComing
+      }
+      mainWindow.webContents.send('upComingData', result)
+    })
+    .catch(error => {
+      console.log('////////////// upcoming findall arror ///////////////')
+      console.log(error)
     })
   }
 })

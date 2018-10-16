@@ -59,10 +59,10 @@ class Listing extends Component {
                     page : this.state.page,
                 }
                 ipcRenderer.send('trendingFind', data)
-                ipcRenderer.on('trendingData', (e, data) => {
+                ipcRenderer.on('trendingData', (e, res) => {
                     this.setState ({
-                        trendingMovies : data,
-                        totalPages : data.length/20,
+                        trendingMovies : res.data,
+                        totalPages : res.count/20,
                         setPage : false,
                         loading : false
                     })

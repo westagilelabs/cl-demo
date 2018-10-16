@@ -76,10 +76,10 @@ class TopRated extends Component {
                     page : this.state.page,
                 }
                 ipcRenderer.send('topRatedFind', data)
-                ipcRenderer.on('topRatedData', (e, data) => {
+                ipcRenderer.on('topRatedData', (e, res) => {
                     this.setState ({
-                        topRated : data,
-                        totalPages : data.length/20,
+                        topRated : res.data,
+                        totalPages : res.count/20,
                         setPage : false,
                         loading : false
                     })

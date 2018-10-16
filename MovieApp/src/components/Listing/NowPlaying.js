@@ -64,10 +64,10 @@ class NowPlaying extends Component {
                     page : this.state.page,
                 }
                 ipcRenderer.send('nowPlayingFind', data)
-                ipcRenderer.on('nowPlayingData', (e, data) => {
+                ipcRenderer.on('nowPlayingData', (e, res) => {
                     this.setState ({
-                        nowPlaying : data,
-                        totalPages : data.length/20,
+                        nowPlaying : res.data,
+                        totalPages : res.count/20,
                         setPage : false,
                         loading : false
                     })

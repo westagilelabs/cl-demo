@@ -77,11 +77,11 @@ class UpComing extends Component {
                     page : this.state.page,
                 }
                 ipcRenderer.send('upComingFind', data)
-                ipcRenderer.on('upComingData', (e, data) => {
+                ipcRenderer.on('upComingData', (e, res) => {
                     console.log(data)
                     this.setState ({
-                        upComing : data,
-                        totalPages : data.length/20,
+                        upComing : res.data,
+                        totalPages :res.count/20,
                         setPage : false,
                         loading : false
                     })
