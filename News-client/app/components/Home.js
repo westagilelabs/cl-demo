@@ -231,7 +231,6 @@ export default class Home extends Component {
             this.state.headlines.map((country, index) => {
                   return <li key={`country_${index}`}>
                   <section className={styles.newsWrapper}>
-                     <a href={country.newsURL}>
                       <div className={styles.headlinesContainer}>
                             <div className={styles.leftNewsPanel}>
                               <p>
@@ -247,7 +246,6 @@ export default class Home extends Component {
                               <img src={country.imageURL} />
                             </div>
                         </div>
-                      </a>
                       <Button onClick={this.toggleModal}>Read More</Button>
                       <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
                         <ModalHeader toggle={this.toggleModal}>Modal title</ModalHeader>
@@ -289,7 +287,6 @@ export default class Home extends Component {
                     this.state.news.map((country, index) => {
                           return <li key={`country_${index}`}>
                           <section className={styles.newsWrapper}>
-                            <a href={country.newsURL}>
                               <div className={styles.headlinesContainer}>
                                     <div className={styles.leftNewsPanel}>
                                       <p>
@@ -305,14 +302,24 @@ export default class Home extends Component {
                                       <img src={country.imageURL} />
                                     </div>
                                 </div>
-                              </a>
+                                <Button onClick={this.toggleModal}>Read More</Button>
+                                <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+                                  <ModalHeader toggle={this.toggleModal}>Modal title</ModalHeader>
+                                  <ModalBody>
+                                    <webview id="foo" src={country.newsURL}></webview>  
+                                    {/* <iframe src={country.newsURL} width="400px" height="400px"></iframe>                        */}
+                                  </ModalBody>
+                                  <ModalFooter>
+                                    <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+                                  </ModalFooter>
+                                </Modal>
                           </section>
                           </li>
                     })
                   }
                  </ul>
                  : 
-                 <p>Search for something to see News</p>}
+                 <p className={styles.noContent}>Please search something to see News</p>}
               
           </TabPane>
         </TabContent>

@@ -3,13 +3,22 @@
     font-size: 1.875rem;
     color: #fff;
     position: absolute;
-    top: 45%;
+    top: 25%;
     right: 0;
     left: 0;
     z-index: 1;
 }
 .bannerContainer {
     position: relative;
+}
+header {
+    position: absolute;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+}
+header img {
+    width: 100px;
+    height: 100px;;
 }
 .bannerContainer:after {
     content: "";
