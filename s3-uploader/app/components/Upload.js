@@ -511,7 +511,7 @@ export default class Upload extends React.Component{
             <div className="upload-input-wrapper">
               <div className="upload-input">
                   <input className="uploadable-input d-none" id="uploadLocalFile" name="uploadLocalFile" type="file" onChange={this.onChange} ref="uploadFile" accept='application/msword, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.document' multiple/>
-                  <label htmlFor="uploadLocalFile">{this.state.fileName ? this.state.fileName : "Click here to Upload file.."}</label>
+                  <label htmlFor="uploadLocalFile">{this.state.fileName ? this.state.fileName : "Click here to Upload file(s)"}</label>
                   <button type="submit">
                     Upload to S3
                   </button>
