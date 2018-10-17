@@ -310,7 +310,6 @@ app.post('/dump', (request, response) => {
   })
 });
 
-
 function downloadFilestoLocalDisk(key, host, type) {
  let file_name = key.Key;
  let params = {
@@ -412,6 +411,7 @@ app.get('/sync', (request, response) => {
                }
                filesObjFromS3.forEach( (item, index) => {
                  let foundValue = filesObjFromLocal.filter(obj=>obj.file_name===item.Key);
+
                  if(foundValue.length > 0) {
                    let s3_date = moment(getLocalTime(item.LastModified));
                    let d1 = foundValue[0].uploaded_on.split('.')
@@ -428,15 +428,19 @@ app.get('/sync', (request, response) => {
                      k++;
                    } else {
                      if(k === filesObjFromS3.length) {
-                       if(result.code == 201) {
-                         response.send(
-                             {'success': true, 'msg': result.msg, 'code': 102}
-                         );
-                       } else {
-                         response.send(
-                             {'success': true, 'msg': 'Sync is up-to-date', 'code': 99}
-                         );
-                       }
+                       response.send(
+                           {'success': true, 'msg': 'Sync Completed', 'code': 102}
+                       );
+
+                       // if(result.code == 201) {
+                       //   response.send(
+                       //       {'success': true, 'msg': result.msg, 'code': 102}
+                       //   );
+                       // } else {
+                       //   response.send(
+                       //       {'success': true, 'msg': 'Sync is up-to-date', 'code': 99}
+                       //   );
+                       // }
                      }
                      k++;
                    }

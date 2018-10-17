@@ -172,7 +172,7 @@ export default class Upload extends React.Component{
     axios({
         url: this.base_url+'sync',
         method: 'GET',
-      }).then((response) => {
+      }).then( (response) => {
         if(response.data.success) {
           setTimeout( () => {
              if(response.data.code == 100 || response.data.code == 101 || response.data.code == 102) {
@@ -180,7 +180,7 @@ export default class Upload extends React.Component{
              }
              ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
              this.setState({showSpinner: false});
-           }, 100);
+           }, 3000);
         } else {
           ToastStore.error(response.data.msg, this.toast_timeout, 'custom-toast-success');
           this.setState({showSpinner: false});
@@ -261,6 +261,7 @@ export default class Upload extends React.Component{
 
   getFilesData(){
     S3UploaderModelOperations.getAllFiles().then( (files) => {
+      console.log('files', files);
       files.forEach( (item) => {
         item.uploaded_on = this.getLocalTime(item.uploaded_on)
         item.file_size = this.getFileSize(item.file_size)
@@ -285,9 +286,6 @@ export default class Upload extends React.Component{
     } else {
       this.state.deleteText = 'Are you sure want to delete this file ?';
     }
-
-
-
   }
 
   onFormSubmit(e){
@@ -444,6 +442,7 @@ export default class Upload extends React.Component{
   getSrc(fn, ft) {
     if(ft.search('image') != -1) {
       return '../node-api/uploads/'+fn+'?v='+Math.random();
+      // return 'https://c3-demo.s3.amazonaws.com/'+fn+'?v='+Math.random();
     } else if(ft.search('pdf') != -1) {
       return '../resources/app-pdf-icon.png';
     } else if(ft.search('msword') != -1 || ft.search('document') != -1) {
@@ -465,9 +464,6 @@ export default class Upload extends React.Component{
               <Button color="secondary" onClick={this.deleteNo}>NO</Button>
             </ModalFooter>
           </Modal>
-
-
-
           <Modal isOpen={this.state.modal} toggle={this.openModal} className={this.props.className}>
             <ModalHeader toggle={this.openModal}>File Details</ModalHeader>
             <ModalBody>
