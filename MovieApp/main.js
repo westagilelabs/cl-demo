@@ -346,72 +346,24 @@ ipcMain.on('upComingFind', (e, data) => {
   }
 })
 
-ipcMain.on('findMovieDetails', (e, data) => {
-  if(data.category === '') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trending => {
-      mainWindow.webContents.send('movieDetails', trending)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'trending') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trendingMovie => {
-      mainWindow.webContents.send('movieDetails', trendingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'nowPlaying') {
-    nowPlaying.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(nowPlayingMovie => {
-      mainWindow.webContents.send('movieDetails', nowPlayingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'topRated') {
-    topRated.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(topRatedMovie => {
-      mainWindow.webContents.send('movieDetails', topRatedMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'upComing') {
-    upComing.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(upComingMovie => {
-      mainWindow.webContents.send('movieDetails', upComingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+ipcMain.on('findMovieDetails', async (e, data) => {
+  const trendingDetails = await trending.find({ 
+    where : { movieId : data.id}
+  });
+  const topRatedDetails = await topRated.find({ 
+    where : { movieId : data.id}
+  });
+  const nowPlayingDetails = await nowPlaying.find({ 
+    where : { movieId : data.id}
+  });
+  const upComingDetails = await upComing.find({ 
+    where : { movieId : data.id}
+  });
+  (Object.keys(trendingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', trendingDetails) : null) 
+  (Object.keys(topRatedDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', topRatedDetails) : null)  
+  (Object.keys(nowPlayingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', nowPlayingDetails) : null)  
+  (Object.keys(upComingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', upComingDetails) : null)    
+
 })
 
 ipcMain.on('getData', async(e, data) => {
