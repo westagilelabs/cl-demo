@@ -102,7 +102,7 @@ class TopRated extends Component {
                                     <CardImg top width="100px"  src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
                                     <CardBody>
                                     <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
-                                    <CardText >{e.overview || e.dataValues.overview}</CardText>
+                                    <CardText >{e.overview || e.dataValues? (e.overview || e.dataValues.overview) : null}</CardText>
                                     </CardBody>
                                 </Card>
                             </Col>

@@ -25,7 +25,6 @@ class PaginationComp extends Component {
                     <PaginationLink
                         onClick={e => this.props.setPage(this.state.currentPage - 1)}
                         previous
-                        href="#"
                     />
                 </PaginationItem>
                 {this.state.pages.map((e, i) => {
@@ -39,7 +38,6 @@ class PaginationComp extends Component {
                     <PaginationLink 
                         onClick={e => this.props.setPage(this.state.currentPage + 1)}
                         next
-                        href="#"
                     />
                 </PaginationItem>
             </Pagination>

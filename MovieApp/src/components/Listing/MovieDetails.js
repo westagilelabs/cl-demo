@@ -95,9 +95,9 @@ class MovieDetails extends Component {
                                 <Media heading>
                                     Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? (<span style={{fontSize:'15px'}}>{this.state.movieDetails.tagline }</span> ): null}
                                 </Media>
-                                {this.state.movieDetails.release_date ? (<b style={{fontSize:'18px'}}>Release Date </b> - this.state.movieDetails.release_date) : null}<br/>
-                                {this.state.movieDetails.runtime ? (<b style={{fontSize:'18px'}}>Run time </b>- this.state.movieDetails.runtime) : null}<br/>
-                                {this.state.movieDetails.revenue ? (<b style={{fontSize:'18px'}}>Revenue </b>- this.state.movieDetails.revenue) : null }<br/>
+                                <b style={{fontSize:'18px'}}>Release Date </b> - {this.state.movieDetails.release_date} <br/>
+                                <b style={{fontSize:'18px'}}>Run time </b>- {this.state.movieDetails.runtime} <br/>
+                                <b style={{fontSize:'18px'}}>Revenue </b>- {this.state.movieDetails.revenue}  <br/>
                                 <b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average || this.state.movieDetails.rating} / 10 <br/>
                                 <b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}
                             </Media>

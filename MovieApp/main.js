@@ -107,7 +107,7 @@ ipcMain.on('trending', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -147,7 +147,7 @@ ipcMain.on('nowPlaying', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -184,7 +184,7 @@ ipcMain.on('topRated', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -221,7 +221,7 @@ ipcMain.on('upComing', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -412,4 +412,25 @@ ipcMain.on('findMovieDetails', (e, data) => {
       console.log(error)
     })
   }
+})
+
+ipcMain.on('getData', async(e, data) => {
+  let array1
+  let array2
+  const trendingArr = await trending.findAll({
+    attributes : ['name','movieId']
+  })
+  const topRatedArr = await topRated.findAll({
+    attributes : ['name','movieId']
+  })
+  const nowPlayingArr = await nowPlaying.findAll({
+    attributes : ['name','movieId']
+  })
+  const upComingArr = await upComing.findAll({
+    attributes : ['name','movieId']
+  })
+  array1 = trendingArr.concat(topRatedArr)
+  array2 = nowPlayingArr.concat(upComingArr)
+  let result = array1.concat(array2)
+  mainWindow.webContents.send('searchData', result)
 })
