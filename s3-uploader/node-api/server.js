@@ -108,11 +108,13 @@ app.put('/upload/:id', (request, response) => {
     var form = new formidable.IncomingForm();
     form.parse(request, function(err, fields, files) {
         if (err) next(err);
-
         if(!Object.keys(files).length) {
           response.status(422).send({'success': false, 'err': 'Please select a file to upload.'});
         }
         else {
+          // deleting existing file from local disk
+          fs.unlink(localFileDir + '/' + fields.old_file,function(err){});
+
           form.uploadDir = localFileDir;
           let newFileName = fields.file_name;
           fs.rename(files.file.path, form.uploadDir + newFileName , function(err) {
@@ -122,6 +124,13 @@ app.put('/upload/:id', (request, response) => {
                 internetAvailable().then(function(){
                     fs.readFile(localFileDir + newFileName, (err, data) => {
                        if (err) throw err;
+
+                       // deleting existing file from s3
+                       s3.deleteObject({Bucket: s3_bucket,Key: fields.old_file}, function (err, data) {
+                         console.log('Deleting existing file');
+                       });
+
+
                        const params = {
                            Bucket: s3_bucket,
                            Key: newFileName,
@@ -301,7 +310,6 @@ app.post('/dump', (request, response) => {
   })
 });
 
-
 function downloadFilestoLocalDisk(key, host, type) {
  let file_name = key.Key;
  let params = {
@@ -403,6 +411,7 @@ app.get('/sync', (request, response) => {
                }
                filesObjFromS3.forEach( (item, index) => {
                  let foundValue = filesObjFromLocal.filter(obj=>obj.file_name===item.Key);
+
                  if(foundValue.length > 0) {
                    let s3_date = moment(getLocalTime(item.LastModified));
                    let d1 = foundValue[0].uploaded_on.split('.')
@@ -419,15 +428,19 @@ app.get('/sync', (request, response) => {
                      k++;
                    } else {
                      if(k === filesObjFromS3.length) {
-                       if(result.code == 201) {
-                         response.send(
-                             {'success': true, 'msg': result.msg, 'code': 102}
-                         );
-                       } else {
-                         response.send(
-                             {'success': true, 'msg': 'Sync is up-to-date', 'code': 99}
-                         );
-                       }
+                       response.send(
+                           {'success': true, 'msg': 'Sync Completed', 'code': 102}
+                       );
+
+                       // if(result.code == 201) {
+                       //   response.send(
+                       //       {'success': true, 'msg': result.msg, 'code': 102}
+                       //   );
+                       // } else {
+                       //   response.send(
+                       //       {'success': true, 'msg': 'Sync is up-to-date', 'code': 99}
+                       //   );
+                       // }
                      }
                      k++;
                    }

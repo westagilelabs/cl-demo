@@ -32,4 +32,17 @@
 
 .modalTable{
   margin-top: 10px;
+  font-size: 14px;
+}
+
+.modalTable tr{
+  white-space: nowrap;
+}
+
+.modalTable th{
+  padding-right: 10px;
+}
+
+.modal-content {
+  color: black;
 }
