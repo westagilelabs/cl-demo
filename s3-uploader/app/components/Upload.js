@@ -3,14 +3,14 @@ import React, { Component } from 'react';
 import { render } from "react-dom";
 import routes from '../constants/routes';
 import styles from './Upload.global.css';
-import { Button, Label, Link } from 'react-desktop/macOs';
+import { Label, Link } from 'react-desktop/macOs';
 import axios from 'axios';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import ReactTable from "react-table";
 import moment from 'moment';
 import S3UploaderModelOperations from './S3UploaderModelOperations';
 import SpinnerComponent from './preloader/preloader'
-import Modal from 'react-responsive-modal';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Upload extends React.Component{
   constructor(props) {
@@ -23,8 +23,12 @@ export default class Upload extends React.Component{
       rowIndex: null,
       listOfFiles: [],
       fileName: null,
-      open: false,
-      file_info: {file_name:null, file_type:null, file_size:null, s3_url:null, local_url:null, connectivity:null}
+      modal: false,
+      cmodal: false,
+      file_info: {file_name:null, file_type:null, file_size:null, s3_url:null, local_url:null, connectivity:null},
+      deleteText: '',
+      delete_rowIndex: null,
+      delete_id: null
     }
     this.onFormSubmit = this.onFormSubmit.bind(this)
     this.onChange = this.onChange.bind(this)
@@ -38,9 +42,129 @@ export default class Upload extends React.Component{
     this.dumpData = this.dumpData.bind(this)
     this.sync = this.sync.bind(this)
     this.getSrc = this.getSrc.bind(this)
+    this.openModal = this.openModal.bind(this);
+    this.openCModal = this.openCModal.bind(this);
+    this.deleteYes = this.deleteYes.bind(this);
+    this.deleteNo = this.deleteNo.bind(this);
 
     this.base_url = 'http://localhost:3000/'
     this.toast_timeout = 3000;
+  }
+
+
+  deleteYes() {
+    let id = this.state.delete_id;
+    let rowIndex = this.state.delete_rowIndex;
+    this.setState({showSpinner: true});
+    let delete_id = id;
+    if(delete_id == 'all') {
+      S3UploaderModelOperations.getAllFiles().then( (files) => {
+        let fileNamesObj = [];
+        files.forEach(item => {
+          fileNamesObj.push({file_name: item.file_name})
+        });
+        if(fileNamesObj.length) {
+          const deleteUrl = this.base_url+"delete-all";
+          const httpReqHeaders = {
+            'Content-Type': 'application/json'
+          };
+          const axiosConfigObject = {headers: httpReqHeaders, data: {file_names: fileNamesObj}};
+          axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
+            const deleteUrl = this.base_url+"upload/idnotneed";
+            const httpReqHeaders = {
+              'Content-Type': 'application/json'
+            };
+
+            if(response.data.connectivity) {
+              S3UploaderModelOperations.deleteAllFiles().then( (dbResp) => {
+                if(dbResp) {
+                  this.state.listOfFiles.length = 0;
+                  this.setState({listOfFiles: this.state.listOfFiles})
+                  ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
+                  this.setState({showSpinner: false});
+                }
+              });
+            } else {
+              ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
+              S3UploaderModelOperations.softDeleteAllFiles().then( (dbResp) => {
+                if(dbResp) {
+                  this.state.listOfFiles.length = 0;
+                  this.setState({listOfFiles: this.state.listOfFiles})
+                  ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
+                  this.setState({showSpinner: false});
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            ToastStore.error(err.response.data.msg, this.toast_timeout, 'custom-toast-error');
+            this.setState({showSpinner: false});
+          });
+        } else {
+          ToastStore.error('No files to delete', this.toast_timeout, 'custom-toast-error');
+          this.setState({showSpinner: false});
+        }
+      });
+    } else {
+      S3UploaderModelOperations.getFileInfoById(delete_id).then( (dbResp) => {
+        const deleteUrl = this.base_url+"upload/idnotneed";
+        const httpReqHeaders = {
+          'Content-Type': 'application/json'
+        };
+        const axiosConfigObject = {headers: httpReqHeaders, data: {file_name: dbResp.dataValues.file_name}};
+        axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
+          if(response.data.connectivity) {
+            S3UploaderModelOperations.deleteFile(delete_id).then( (deleteResp) => {
+              this.state.listOfFiles.splice(rowIndex, 1);
+              this.setState({listOfFiles: this.state.listOfFiles})
+              ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
+              this.setState({showSpinner: false});
+            });
+          } else {
+            ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
+            let deleteObj = {}
+            deleteObj._id = delete_id;
+            deleteObj.action_type = 'DELETE_FILE';
+            deleteObj.connectivity = 0;
+            deleteObj.is_deleted = 1;
+            S3UploaderModelOperations.updateFile(deleteObj).then( (deleteResp) => {
+              this.state.listOfFiles.splice(rowIndex, 1);
+              this.setState({listOfFiles: this.state.listOfFiles})
+              ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
+              this.setState({showSpinner: false});
+            });
+          }
+
+          if(typeof response.data.notFoundOnLocalDisk != 'undefined') {
+            ToastStore.error(response.data.notFoundOnLocalDisk, this.toast_timeout, 'custom-toast-error');
+          }
+        })
+        .catch((err) => {
+          ToastStore.error(err.response.data.msg, this.toast_timeout, 'custom-toast-error');
+          this.setState({showSpinner: false});
+        });
+      });
+    }
+    this.openCModal()
+  }
+
+  deleteNo() {
+    this.openCModal()
+  }
+
+  openModal(finfo) {
+    this.setState({
+      modal: !this.state.modal
+    });
+    if(!this.state.modal) {
+      this.setState({file_info: finfo})
+    }
+  }
+
+  openCModal() {
+    this.setState({
+      cmodal: !this.state.cmodal
+    });
   }
 
   sync() {
@@ -150,98 +274,20 @@ export default class Upload extends React.Component{
   }
 
   deleteFile(id, rowIndex) {
-    if(confirm(id=="all" ? "Are you sure want to delete all files ?" : "Are you sure want to delete this file ?")) {
-      this.setState({showSpinner: true});
-      let delete_id = id;
-      if(delete_id == 'all') {
-        S3UploaderModelOperations.getAllFiles().then( (files) => {
-          let fileNamesObj = [];
-          files.forEach(item => {
-            fileNamesObj.push({file_name: item.file_name})
-          });
-          if(fileNamesObj.length) {
-            const deleteUrl = this.base_url+"delete-all";
-            const httpReqHeaders = {
-              'Content-Type': 'application/json'
-            };
-            const axiosConfigObject = {headers: httpReqHeaders, data: {file_names: fileNamesObj}};
-            axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
-              const deleteUrl = this.base_url+"upload/idnotneed";
-              const httpReqHeaders = {
-                'Content-Type': 'application/json'
-              };
+    this.setState({
+      cmodal: !this.state.cmodal
+    });
 
-              if(response.data.connectivity) {
-                S3UploaderModelOperations.deleteAllFiles().then( (dbResp) => {
-                  if(dbResp) {
-                    this.state.listOfFiles.length = 0;
-                    this.setState({listOfFiles: this.state.listOfFiles})
-                    ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
-                    this.setState({showSpinner: false});
-                  }
-                });
-              } else {
-                ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
-                S3UploaderModelOperations.softDeleteAllFiles().then( (dbResp) => {
-                  if(dbResp) {
-                    this.state.listOfFiles.length = 0;
-                    this.setState({listOfFiles: this.state.listOfFiles})
-                    ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
-                    this.setState({showSpinner: false});
-                  }
-                });
-              }
-            })
-            .catch((err) => {
-              ToastStore.error(err.response.data.msg, this.toast_timeout, 'custom-toast-error');
-              this.setState({showSpinner: false});
-            });
-          } else {
-            ToastStore.error('No files to delete', this.toast_timeout, 'custom-toast-error');
-            this.setState({showSpinner: false});
-          }
-        });
-      } else {
-        S3UploaderModelOperations.getFileInfoById(delete_id).then( (dbResp) => {
-          const deleteUrl = this.base_url+"upload/idnotneed";
-          const httpReqHeaders = {
-            'Content-Type': 'application/json'
-          };
-          const axiosConfigObject = {headers: httpReqHeaders, data: {file_name: dbResp.dataValues.file_name}};
-          axios.delete(deleteUrl, axiosConfigObject).then((response)=>{
-            if(response.data.connectivity) {
-              S3UploaderModelOperations.deleteFile(delete_id).then( (deleteResp) => {
-                this.state.listOfFiles.splice(rowIndex, 1);
-                this.setState({listOfFiles: this.state.listOfFiles})
-                ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
-                this.setState({showSpinner: false});
-              });
-            } else {
-              ToastStore.error(response.data.connectivityProb, this.toast_timeout, 'custom-toast-error');
-              let deleteObj = {}
-              deleteObj._id = delete_id;
-              deleteObj.action_type = 'DELETE_FILE';
-              deleteObj.connectivity = 0;
-              deleteObj.is_deleted = 1;
-              S3UploaderModelOperations.updateFile(deleteObj).then( (deleteResp) => {
-                this.state.listOfFiles.splice(rowIndex, 1);
-                this.setState({listOfFiles: this.state.listOfFiles})
-                ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success');
-                this.setState({showSpinner: false});
-              });
-            }
+    this.setState({delete_rowIndex: rowIndex, delete_id: id});
 
-            if(typeof response.data.notFoundOnLocalDisk != 'undefined') {
-              ToastStore.error(response.data.notFoundOnLocalDisk, this.toast_timeout, 'custom-toast-error');
-            }
-          })
-          .catch((err) => {
-            ToastStore.error(err.response.data.msg, this.toast_timeout, 'custom-toast-error');
-            this.setState({showSpinner: false});
-          });
-        });
-      }
+    if(id == 'all') {
+      this.state.deleteText = 'Are you sure want to delete all files ?';
+    } else {
+      this.state.deleteText = 'Are you sure want to delete this file ?';
     }
+
+
+
   }
 
   onFormSubmit(e){
@@ -405,52 +451,59 @@ export default class Upload extends React.Component{
     }
   }
 
-  onOpenModal = (finfo) => {
-    this.setState({file_info: finfo})
-    this.setState({ open: true });
-  };
-
-  onCloseModal = () => {
-    this.setState({ open: false });
-  };
-
   render() {
     const { open } = this.state;
     return (
       <div className={styles.container} data-tid="container">
-          <Modal open={open} onClose={this.onCloseModal} center styles={{modal: { 'color': 'black'}, closeButton: {'cursor': 'pointer'}}}>
+         <Modal isOpen={this.state.cmodal} toggle={this.openCModal} className={this.props.className}>
+            <ModalHeader toggle={this.openCModal}>Delete ?</ModalHeader>
+            <ModalBody>
+              {this.state.deleteText}
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onClick={this.deleteYes}>YES</Button>{' '}
+              <Button color="secondary" onClick={this.deleteNo}>NO</Button>
+            </ModalFooter>
+          </Modal>
+
+
+
+          <Modal isOpen={this.state.modal} toggle={this.openModal} className={this.props.className}>
+            <ModalHeader toggle={this.openModal}>File Details</ModalHeader>
+            <ModalBody>
             <table className="modalTable">
-              <tbody>
-                <tr>
-                  <th>File Name:</th>
-                  <td>{this.state.file_info.file_name}</td>
-                </tr>
-                <tr>
-                  <th>File Type:</th>
-                  <td>{this.state.file_info.file_type}</td>
-                </tr>
-                <tr>
-                  <th>File Size:</th>
-                  <td>{this.state.file_info.file_size}</td>
-                </tr>
-                <tr>
-                  <th>Uploaded On:</th>
-                  <td>{this.state.file_info.uploaded_on}</td>
-                </tr>
-                <tr>
-                  <th>S3 URL:</th>
-                  <td>{this.state.file_info.s3_url}</td>
-                </tr>
-                <tr>
-                  <th>Local URL:</th>
-                  <td>{this.state.file_info.local_url}</td>
-                </tr>
-                <tr>
-                  <th>Connectivity:</th>
-                  <td>{this.state.file_info.connectivity ? 'ONLINE' : 'OFFLINE'}</td>
-                </tr>
-              </tbody>
-            </table>
+                <tbody>
+                  <tr>
+                    <th>File Name</th>
+                    <td>{this.state.file_info.file_name}</td>
+                  </tr>
+                  <tr>
+                    <th>File Type</th>
+                    <td>{this.state.file_info.file_type}</td>
+                  </tr>
+                  <tr>
+                    <th>File Size</th>
+                    <td>{this.state.file_info.file_size}</td>
+                  </tr>
+                  <tr>
+                    <th>Uploaded On</th>
+                    <td>{this.state.file_info.uploaded_on}</td>
+                  </tr>
+                  <tr>
+                    <th>S3 URL</th>
+                    <td>{this.state.file_info.s3_url}</td>
+                  </tr>
+                  <tr>
+                    <th>Local URL</th>
+                    <td>{this.state.file_info.local_url}</td>
+                  </tr>
+                  <tr>
+                    <th>Connectivity</th>
+                    <td>{this.state.file_info.connectivity ? 'ONLINE' : 'OFFLINE'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </ModalBody>
           </Modal>
           { this.state.showSpinner ? <SpinnerComponent/> : null }
           <form className="uploader-form" onSubmit={this.onFormSubmit}>
@@ -492,7 +545,7 @@ export default class Upload extends React.Component{
                       accessor: "file_name",
                       Cell: row => (
                         <div className="d-flex align-items-center">
-                          <div className="thumb" onClick={() => this.onOpenModal(row.original)}><img src={this.getSrc(row.original.file_name, row.original.file_type)} width="75" height="75"/></div>
+                          <div className="thumb" onClick={() => this.openModal(row.original)}><img src={this.getSrc(row.original.file_name, row.original.file_type)} width="75" height="75"/></div>
                           <div>{row.original.file_name}</div>
                         </div>
                       )
@@ -533,13 +586,13 @@ export default class Upload extends React.Component{
                   <div className="uploaded-file-details d-flex align-items-center justify-content-around">
                     <Label>
                       <small>S3 url : </small>
-                      <Link href="javascript:void(0);" color="white" onClick={() => this.onOpenModal(row.original)}>
+                      <Link href="javascript:void(0);" color="white" onClick={() => this.openModal(row.original)}>
                         {row.original.s3_url}
                       </Link>
                     </Label>
                     <Label>
                       <small>Local url : </small>
-                      <Link href="javascript:void(0);" color="white" onClick={() => this.onOpenModal(row.original)}>
+                      <Link href="javascript:void(0);" color="white" onClick={() => this.openModal(row.original)}>
                         {row.original.local_url}
                       </Link>
                     </Label>
