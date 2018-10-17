@@ -98,16 +98,16 @@ class MovieDetails extends Component {
                                 <Media heading>
                                     Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? (<span style={{fontSize:'15px'}}>{this.state.movieDetails.tagline }</span> ): null}
                                 </Media>
-                                {this.state.movieDetails.release_date ? <b style={{fontSize:'18px'}}>Release Date </b> - (this.state.movieDetails.release_date) : null} 
-                                {this.state.movieDetails.runtime ? <b style={{fontSize:'18px'}}>Run time </b>- (this.state.movieDetails.runtime) : null} 
-                                {this.state.movieDetails.revenue ? <b style={{fontSize:'18px'}}>Revenue </b>- (this.state.movieDetails.revenue) : null  }<br/>
+                                {this.state.movieDetails.release_date ? (<b style={{fontSize:'18px'}}>Release Date - {this.state.movieDetails.release_date}</b>) : null}<br/> 
+                                {this.state.movieDetails.runtime ? (<b style={{fontSize:'18px'}}>Run time - {this.state.movieDetails.runtime}</b>) : null}<br/> 
+                                {this.state.movieDetails.revenue ? (<b style={{fontSize:'18px'}}>Revenue - {this.state.movieDetails.revenue}</b>) : null  }<br/>
                                 <b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average || this.state.movieDetails.rating} / 10 <br/>
                                 <b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}
                             </Media>
                         </Media>
                     </div>
                     : null
-                }
+                }               
             </div>
         )
     }
