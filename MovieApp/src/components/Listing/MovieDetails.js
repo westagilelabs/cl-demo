@@ -22,6 +22,9 @@ class MovieDetails extends Component {
     }
 
     componentDidMount () {
+        this.setState ({
+            id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2]),
+        })
         this.getMovieDetails ()
     }
 
@@ -95,9 +98,9 @@ class MovieDetails extends Component {
                                 <Media heading>
                                     Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? (<span style={{fontSize:'15px'}}>{this.state.movieDetails.tagline }</span> ): null}
                                 </Media>
-                                <b style={{fontSize:'18px'}}>Release Date </b> - {this.state.movieDetails.release_date} <br/>
-                                <b style={{fontSize:'18px'}}>Run time </b>- {this.state.movieDetails.runtime} <br/>
-                                <b style={{fontSize:'18px'}}>Revenue </b>- {this.state.movieDetails.revenue}  <br/>
+                                {this.state.movieDetails.release_date ? <b style={{fontSize:'18px'}}>Release Date </b> - (this.state.movieDetails.release_date) : null} 
+                                {this.state.movieDetails.runtime ? <b style={{fontSize:'18px'}}>Run time </b>- (this.state.movieDetails.runtime) : null} 
+                                {this.state.movieDetails.revenue ? <b style={{fontSize:'18px'}}>Revenue </b>- (this.state.movieDetails.revenue) : null  }<br/>
                                 <b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average || this.state.movieDetails.rating} / 10 <br/>
                                 <b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}
                             </Media>
