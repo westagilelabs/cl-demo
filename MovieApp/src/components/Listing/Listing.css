@@ -1,0 +1,10 @@
+.loadNext {
+    float: right;
+    margin-right: 50px;
+    background-color: darkgray;
+}
+.loadPrev {
+    float: left;
+    margin-right: 50px;
+    background-color: darkgray;
+}

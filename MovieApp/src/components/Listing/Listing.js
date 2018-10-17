@@ -6,7 +6,7 @@ import {
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
-import PaginationComp from './Pagination'
+import './Listing.css'
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 
@@ -23,7 +23,8 @@ class Listing extends Component {
             setPage : false,
             loading : true
         }
-        this.setPage = this.setPage.bind(this)
+        this.setNextPage = this.setNextPage.bind(this)
+        this.setPrevPage = this.setPrevPage.bind(this)
     }
     componentDidUpdate (prevProps, prevStates) {
         if(prevProps.active !== this.props.active
@@ -83,9 +84,15 @@ class Listing extends Component {
             movieId : e
         })
     }
-    setPage = (e) => {
+    setNextPage = () => {
         this.setState ({
-            page : e,
+            page : this.state.page + 1,
+            setPage : true
+        })
+    }
+    setPrevPage = () => {
+        this.setState ({
+            page : this.state.page - 1,
             setPage : true
         })
     }
@@ -110,13 +117,27 @@ class Listing extends Component {
                                 </Col>
                                 })}
                             </Row>
+                            {
+                                this.state.page !== 1 ?
+                                <div className='loadPrev'>
+                                    <span  onClick={() => this.setPrevPage()}>Prev</span>
+                                </div>
+                                    : null
+                            }
+                            { 
+                                this.state.totalPages !== this.state.page ?
+                                <div className='loadNext'>
+                                    <span  onClick={() => this.setNextPage()}>Next</span>
+                                </div>
+                                : null
+                            }
+                            
                         </div>
                         : 
                         <p>No Records</p>
                     )    
                     :   <div><Progress animated color="success" value={2 * 5}/></div>
                     }
-                <PaginationComp totalPages={this.state.totalPages} page={this.state.page} setPage={this.setPage}/>
                 {this.state.movieDetail ? <Redirect push from='/trending' to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'trending'}}}/> : null }
             </div>
         )
