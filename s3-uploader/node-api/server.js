@@ -108,11 +108,13 @@ app.put('/upload/:id', (request, response) => {
     var form = new formidable.IncomingForm();
     form.parse(request, function(err, fields, files) {
         if (err) next(err);
-
         if(!Object.keys(files).length) {
           response.status(422).send({'success': false, 'err': 'Please select a file to upload.'});
         }
         else {
+          // deleting existing file from local disk
+          fs.unlink(localFileDir + '/' + fields.old_file,function(err){});
+
           form.uploadDir = localFileDir;
           let newFileName = fields.file_name;
           fs.rename(files.file.path, form.uploadDir + newFileName , function(err) {
@@ -122,6 +124,13 @@ app.put('/upload/:id', (request, response) => {
                 internetAvailable().then(function(){
                     fs.readFile(localFileDir + newFileName, (err, data) => {
                        if (err) throw err;
+
+                       // deleting existing file from s3
+                       s3.deleteObject({Bucket: s3_bucket,Key: fields.old_file}, function (err, data) {
+                         console.log('Deleting existing file');
+                       });
+
+
                        const params = {
                            Bucket: s3_bucket,
                            Key: newFileName,

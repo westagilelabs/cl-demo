@@ -313,6 +313,7 @@ export default class Upload extends React.Component{
           const url = this.base_url+'upload/idnotneeded';
           const updateFormData = new FormData();
           updateFormData.append('file', this.state.updatefile)
+          updateFormData.append('old_file', dbResp.dataValues.file_name)
           updateFormData.append('file_name', fn)
           updateFormData.append('s3_url', dbResp.dataValues.s3_url)
           const config = {
@@ -349,7 +350,7 @@ export default class Upload extends React.Component{
 
                 ToastStore.success(response.data.msg, this.toast_timeout, 'custom-toast-success')
                 this.refs.uploadFile.value = '';
-                this.state.file = '';
+                this.state.file = null;
                 this.state.update_id = null;
                 this.state.rowIndex = null;
                 this.state.updatefile = null;
@@ -396,7 +397,7 @@ export default class Upload extends React.Component{
 
   getSrc(fn, ft) {
     if(ft.search('image') != -1) {
-      return '../node-api/uploads/'+fn;
+      return '../node-api/uploads/'+fn+'?v='+Math.random();
     } else if(ft.search('pdf') != -1) {
       return '../resources/app-pdf-icon.png';
     } else if(ft.search('msword') != -1 || ft.search('document') != -1) {
@@ -514,11 +515,11 @@ export default class Upload extends React.Component{
                       sortable: false,
                       Cell: row => (
                         <div>
-                          <span onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
+                          <span title="Update" onClick={() => this.selectUpdateFile(row.original._id, row.index)}><i className="fas fa-upload hover"></i></span>
                           <span> / </span>
-                          <span onClick={() => this.deleteFile(row.original._id, row.index)}><i className="fas fa-trash hover"></i></span>
+                          <span title="Delete" onClick={() => this.deleteFile(row.original._id, row.index)}><i className="fas fa-trash hover"></i></span>
                           <span> / </span>
-                          <span onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
+                          <span title="Download" onClick={() => this.downloadFile(row.original.file_name, row.original.s3_url)}><i className="fas fa-file-download hover"></i></span>
                         </div>
                       ),
                       minWidth: 20
