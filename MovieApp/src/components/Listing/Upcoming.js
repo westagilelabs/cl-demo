@@ -7,6 +7,7 @@ import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
 import './Listing.css'
+import Preloader from '../preloader/preloader';
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 class UpComing extends Component {
@@ -103,39 +104,41 @@ class UpComing extends Component {
                 <h1>UpComing Movies</h1>
                 { !this.state.loading ? 
                     (this.state.upComing.length > 0 ? 
-                        <div className="container-fluid">
-                        <Row>
-                            {this.state.upComing.map((e, key) => {
-                                return <Col  md="4" sm="12" key = {key} >
-                                <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
-                                    <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
-                                    <CardBody>
-                                    <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
-                                    <CardText >{e.overview || e.dataValues? (e.overview || e.dataValues.overview) : null}</CardText>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            })}
-                        </Row>
-                        {
-                                this.state.page !== 1 ?
-                                <div className='loadPrev'>
-                                    <span  onClick={() => this.setPrevPage()}>Prev</span>
-                                </div>
+                        <div>
+                            <Row>
+                                {this.state.upComing.map((e, key) => {
+                                    return <Col  md="4" sm="12" key = {key} >
+                                    <Card onClick = {() => this.setMovieDetail(e.dataValues ? e.dataValues.movieId : e.id )}>
+                                        <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
+                                        <CardBody>
+                                        <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
+                                        <CardText >{e.overview || e.dataValues? (e.overview || e.dataValues.overview) : null}</CardText>
+                                        </CardBody>
+                                    </Card>
+                                </Col>
+                                })}
+                            </Row>
+                            <div className="pagination-wrapper d-flex">
+                                {
+                                    this.state.page !== 1 ?
+                                    <div className='loadPrev'>
+                                        <span  onClick={() => this.setPrevPage()}>Prev</span>
+                                    </div>
+                                        : null
+                                }
+                                { 
+                                    this.state.totalPages !== this.state.page ?
+                                    <div className='ml-auto loadNext'>
+                                        <span  onClick={() => this.setNextPage()}>Next</span>
+                                    </div>
                                     : null
-                            }
-                            { 
-                                this.state.totalPages !== this.state.page ?
-                                <div className='loadNext'>
-                                    <span  onClick={() => this.setNextPage()}>Next</span>
-                                </div>
-                                : null
-                            }
+                                }
+                            </div>
                         </div>
                         : <p>No Records</p>
                     )
                     : 
-                    <div><Progress animated color="success" value={2 * 5}/></div>
+                    <Preloader/>
                 }
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'upComing'}}}/> : null }
             </div>

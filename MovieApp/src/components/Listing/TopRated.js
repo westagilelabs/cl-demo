@@ -7,6 +7,7 @@ import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
 import './Listing.css'
+import Preloader from '../preloader/preloader';
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 
@@ -101,7 +102,7 @@ class TopRated extends Component {
                 <h1>Top Rated Movies</h1>
                 { !this.state.loading ?  
                     (this.state.topRated.length > 0 ? 
-                        <div className="container-fluid">
+                        <div>
                             <Row>
                                 {this.state.topRated.map((e, key) => {
                                     return <Col  md="4" sm="12" key = {key} >
@@ -115,25 +116,27 @@ class TopRated extends Component {
                                 </Col>
                                 })}
                             </Row>
-                            {
-                                this.state.page !== 1 ?
-                                <div className='loadPrev'>
-                                    <span  onClick={() => this.setPrevPage()}>Prev</span>
-                                </div>
+                            <div className="pagination-wrapper d-flex">
+                                {
+                                    this.state.page !== 1 ?
+                                    <div className='loadPrev'>
+                                        <span  onClick={() => this.setPrevPage()}>Prev</span>
+                                    </div>
+                                        : null
+                                }
+                                { 
+                                    this.state.totalPages !== this.state.page ?
+                                    <div className='ml-auto loadNext'>
+                                        <span  onClick={() => this.setNextPage()}>Next</span>
+                                    </div>
                                     : null
-                            }
-                            { 
-                                this.state.totalPages !== this.state.page ?
-                                <div className='loadNext'>
-                                    <span  onClick={() => this.setNextPage()}>Next</span>
-                                </div>
-                                : null
-                            }
+                                }
+                            </div>
                         </div>
-                        : <p>No Records</p>
+                        : <p className="no-results">No Records</p>
                     )
                     : 
-                    <div><Progress animated color="success" value={2 * 5}/></div>
+                    <Preloader/>
                 }
                 {this.state.movieDetail ? <Redirect push to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'topRated'}}}/> : null }
             </div>

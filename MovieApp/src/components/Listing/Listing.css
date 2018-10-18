@@ -1,10 +1,9 @@
-.loadNext {
-    float: right;
-    margin-right: 50px;
-    background-color: darkgray;
-}
-.loadPrev {
-    float: left;
-    margin-right: 50px;
-    background-color: darkgray;
+.pagination-wrapper > div{
+    color: #fff;
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 5px 10px;
+    display: inline-block;
+    border-radius: 4px;
+    background-color: var(--theme-blue-btn);
 }

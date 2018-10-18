@@ -48,8 +48,8 @@ class Rating extends Component {
 
     render() {
         return (
-        <div>
-            <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}>Click to Rate</Button>
+        <div className="rating-wrapper">
+            <button onClick={this.toggle} style={{ marginBottom: '1rem' }}>Click to Rate</button>
             <Collapse isOpen={this.state.collapse}>
             <Card>
                 <CardBody>
