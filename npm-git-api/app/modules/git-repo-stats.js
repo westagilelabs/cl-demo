@@ -10,8 +10,10 @@ var Stats = require('./Stats');
 export function getPackageDetails(packageName,callback){
     let output;
     let ownerDetails ={};
+    packageName = packageName.replace(/@/g, '');
     shell.exec('npm view --json '+packageName+'' ,{},(code,stdout,stderror) => {
         if(stderror){
+            console.log('Error in fetching npm view');
             callback(stderror,null);
         }else{
             output = JSON.parse(stdout);
@@ -27,6 +29,9 @@ export function getPackageDetails(packageName,callback){
 }
 
 export function getRepoStats(repo,callback){
+  let ownerName = repo.ownerName.replace(/@/g,'');
+  let packageName = repo.packageName.replace(/@/g,'');
+
   request({
     method:'GET',
     uri:'https://api.github.com/repos/'+repo.ownerName+'/'+repo.packageName,
