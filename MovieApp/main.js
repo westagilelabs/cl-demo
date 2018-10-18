@@ -107,7 +107,7 @@ ipcMain.on('trending', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -147,7 +147,7 @@ ipcMain.on('nowPlaying', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -184,7 +184,7 @@ ipcMain.on('topRated', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -221,7 +221,7 @@ ipcMain.on('upComing', (e, data) => {
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -346,70 +346,43 @@ ipcMain.on('upComingFind', (e, data) => {
   }
 })
 
-ipcMain.on('findMovieDetails', (e, data) => {
-  if(data.category === '') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trending => {
-      mainWindow.webContents.send('movieDetails', trending)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'trending') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trendingMovie => {
-      mainWindow.webContents.send('movieDetails', trendingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'nowPlaying') {
-    nowPlaying.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(nowPlayingMovie => {
-      mainWindow.webContents.send('movieDetails', nowPlayingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'topRated') {
-    topRated.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(topRatedMovie => {
-      mainWindow.webContents.send('movieDetails', topRatedMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'upComing') {
-    upComing.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(upComingMovie => {
-      mainWindow.webContents.send('movieDetails', upComingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+ipcMain.on('findMovieDetails', async (e, data) => {
+  const trendingDetails = await trending.find({ 
+    where : { movieId : data.id}
+  });
+  const topRatedDetails = await topRated.find({ 
+    where : { movieId : data.id}
+  });
+  const nowPlayingDetails = await nowPlaying.find({ 
+    where : { movieId : data.id}
+  });
+  const upComingDetails = await upComing.find({ 
+    where : { movieId : data.id}
+  });
+  (Object.keys(trendingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', trendingDetails) : null) 
+  (Object.keys(topRatedDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', topRatedDetails) : null)  
+  (Object.keys(nowPlayingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', nowPlayingDetails) : null)  
+  (Object.keys(upComingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', upComingDetails) : null)    
+
+})
+
+ipcMain.on('getData', async(e, data) => {
+  let array1
+  let array2
+  const trendingArr = await trending.findAll({
+    attributes : ['name','movieId']
+  })
+  const topRatedArr = await topRated.findAll({
+    attributes : ['name','movieId']
+  })
+  const nowPlayingArr = await nowPlaying.findAll({
+    attributes : ['name','movieId']
+  })
+  const upComingArr = await upComing.findAll({
+    attributes : ['name','movieId']
+  })
+  array1 = trendingArr.concat(topRatedArr)
+  array2 = nowPlayingArr.concat(upComingArr)
+  let result = array1.concat(array2)
+  mainWindow.webContents.send('searchData', result)
 })
