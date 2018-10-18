@@ -44,7 +44,7 @@ export default class Counter extends Component<Props> {
       });
 
         return (
-            <div className={styles.container}>
+            <div>
             <div className={styles.backButton} data-tid="backButton">
               <Link to={routes.HOME}>
                 <i className="fa fa-arrow-left fa-3x" />

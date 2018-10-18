@@ -55,20 +55,25 @@ export default class Counter extends Component<Props> {
             Content =  (
                 <div>
                 <div className={styles.backButton} data-tid="backButton">
+
                 <Link to={routes.COUNTER}>
                   <i className="fa fa-arrow-left fa-3x" />
                 </Link>
                 </div>
+                <div className={styles.container}>
                   <p>Size: {counter.size}</p>
                   <p>Watcheers_count: {counter.watchers_count}</p>
                   <p>subscribers_count:{counter.subscribers_count}</p>
                   <p>Open Isssues:{counter.open_issues}</p>
                   <p>Forks count:{counter.forks_count}</p>          
                 </div>
+                </div>
             )
         }else{
             Content = (
+                <div className={styles.container}>
                 <ProgressRing size={75} dotsNumber={10} />
+                </div>
             )
         }
         return Content;

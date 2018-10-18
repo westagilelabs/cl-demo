@@ -17,7 +17,9 @@ export function getPackageDetails(packageName,callback){
             callback(stderror,null);
         }else{
             output = JSON.parse(stdout);
+            output.repository.url = output.repository.url.replace('git://github.com','https://github.com');
             ownerDetails.ownerName = output.repository.url.split('https://github.com/')[1];
+            
             ownerDetails.ownerName = ownerDetails.ownerName.split('.git')[0];
             ownerDetails.packageName = ownerDetails.ownerName.split('/')[1];
             ownerDetails.ownerName = ownerDetails.ownerName.split('/')[0];
