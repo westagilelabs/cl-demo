@@ -41,7 +41,7 @@ export default class header extends Component {
                         </span>
                     </div>
                 </div>
-                {this.state.search ? <Search/> : null }
+                <Search/> 
             </header>
         )
     }

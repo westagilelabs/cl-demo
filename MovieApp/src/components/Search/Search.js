@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { apiKey } from '../../config/config';
 import axiosInstance from '../axiosInstance';
 import { Redirect } from 'react-router-dom';
+const { ipcRenderer } = window.require('electron');
+const isOnline = require('is-online');
+
 
 class Search extends Component {
     constructor (props) {
@@ -14,11 +17,39 @@ class Search extends Component {
             isFocused: false,
             searchQuery : false,
             movieDetail : false,
-            movieId : 0
+            movieId : 0,
+            searchData : [],
+            online : true,
+            results : []
         }
         this.handleSearch = this.handleSearch.bind(this)
         this.getSearch = this.getSearch.bind(this)
         this.onToggleFocus = this.onToggleFocus.bind(this)
+    }
+    componentDidMount () {
+        isOnline ()
+        .then(online => {
+            if (online) {
+                console.log('is online')
+            } else {
+                this.setState ({
+                    online : !this.state.online
+                })
+                this.getData ()
+            }
+        })
+    }
+    getData () {
+        ipcRenderer.send('getData', true)
+        ipcRenderer.on('searchData', (e, data) => {
+            let array 
+            array = data.map(element => {
+                return element.dataValues
+            })
+            this.setState({
+                searchData : array
+            })
+        })
     }
     getSearch () {
         axiosInstance ({
@@ -38,19 +69,37 @@ class Search extends Component {
         })
     }
     handleSearch (e) { 
-        if(e.target.value.length === 0) {
-            this.setState ({
-                searchQuery : false,
-                search : e.target.value,
-                searchResults : []
-            })
+        const value = e.target.value
+        if(this.state.online) {
+            if(value.length === 0) {
+                this.setState ({
+                    searchQuery : false,
+                    search : e.target.value,
+                    searchResults : []
+                })
+            }
+            if(value.length > 0) {
+                this.setState({
+                    search: e.target.value,
+                    searchQuery : !this.state.searchQuery
+                })
+            } 
+        } else {
+            let filterArr
+            if (value.length !== 0) {
+                filterArr = this.state.searchData.filter(element => {
+                    return element.name ? (element.name.includes(value) ?  element.name : null) : null
+                });
+                this.setState ({
+                    search : e.target.value,
+                    results : filterArr
+                })
+            } else {
+                this.setState ({
+                    results : []
+                })
+            }
         }
-        if(e.target.value.length > 0) {
-            this.setState({
-                search: e.target.value,
-                searchQuery : !this.state.searchQuery
-            })
-        } 
     }
 
     onToggleFocus(){
@@ -86,7 +135,7 @@ class Search extends Component {
                         </div>
                         {/* <button className="btn my-2 my-sm-0" type="button">Search</button> */}
                         <div className="search-result-overlay"></div>
-                            {this.state.searchResults.length > 0 ?
+                            {this.state.searchResults.length > 0 && this.state.online ?
                                 <div className="search-result-section">
                                     <ul className="searched-lists searchlist-user">
                                     {this.state.searchResults.map((e, key) => {
@@ -96,7 +145,18 @@ class Search extends Component {
                                     })}
                                     </ul>
                                 </div>
-                                    : null
+                                    : 
+                                    (this.state.results.length > 0 ?
+                                        <div className="search-result-section">
+                                        <ul className="searched-lists searchlist-user">
+                                        {this.state.results.map((e, key) => {
+                                            return <li key={key}>
+                                                    <span className="searched-list" onClick={() => {this.setMovieDetail(e.movieId)}}>{e.name}</span>
+                                            </li>
+                                        })}
+                                        </ul>
+                                    </div>
+                                        : null)
                             }
                     </form>
                 </div>
