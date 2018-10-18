@@ -6,6 +6,7 @@ import { apiKey, guestSessionId } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Link } from "react-router-dom";
 import Rating from './Rating';
+import Preloader from '../preloader/preloader';
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 
@@ -22,6 +23,9 @@ class MovieDetails extends Component {
     }
 
     componentDidMount () {
+        this.setState ({
+            id : this.props.location.state ? this.props.location.state.id : Number(this.props.location.pathname.split('/')[2]),
+        })
         this.getMovieDetails ()
     }
 
@@ -78,9 +82,10 @@ class MovieDetails extends Component {
     render () {
         return (
             <div  className="container-fluid">
-            <Link to={{pathname:'/', category : this.props.location.state ? this.props.location.state.category : ''}}>home</Link>
-                <h1>Movie details</h1>
-                {this.state.setRating ? <Rating setRating = {this.setRating}/> : null}
+                <div className="moviedetails-section text-center">
+                    <Link to={{pathname:'/', category : this.props.location.state ? this.props.location.state.category : ''}}><i class="fas fa-chevron-left"></i></Link>
+                    <h1>Movie details</h1>
+                </div>
                 {Object.keys(this.state.movieDetails).length > 0  ? 
                     <div className="movie-details-wrapper">
                         <Media>
@@ -95,16 +100,17 @@ class MovieDetails extends Component {
                                 <Media heading>
                                     Title : {this.state.movieDetails.title || this.state.movieDetails.name} {this.state.movieDetails.tagline ? (<span style={{fontSize:'15px'}}>{this.state.movieDetails.tagline }</span> ): null}
                                 </Media>
-                                <b style={{fontSize:'18px'}}>Run time </b>: {this.state.movieDetails.runtime} <br/>
-                                <b style={{fontSize:'18px'}}>Revenue </b>: {this.state.movieDetails.revenue} <br/>
-                                <b style={{fontSize:'18px'}}>Release Date </b>: {this.state.movieDetails.release_date} <br/>
-                                <b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average} / 10 <br/>
-                                <b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}
+                                <p>{this.state.movieDetails.release_date ? (<b style={{fontSize:'18px'}}>Release Date - {this.state.movieDetails.release_date}</b>) : null}</p>
+                                <p>{this.state.movieDetails.runtime ? (<b style={{fontSize:'18px'}}>Run time - {this.state.movieDetails.runtime}</b>) : null}</p>
+                                <p>{this.state.movieDetails.revenue ? (<b style={{fontSize:'18px'}}>Revenue - {this.state.movieDetails.revenue}</b>) : null  }</p>
+                                <p><b style={{fontSize:'18px'}}>Rating </b>: {this.state.movieDetails.vote_average || this.state.movieDetails.rating} / 10 </p>
+                                <p><b style={{fontSize:'18px'}}>Overview </b>: {this.state.movieDetails.overview}</p>
+                                {this.state.setRating ? <Rating setRating = {this.setRating}/> : null}
                             </Media>
                         </Media>
                     </div>
-                    : null
-                }
+                    : <Preloader/>
+                }               
             </div>
         )
     }

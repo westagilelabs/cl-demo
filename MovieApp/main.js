@@ -1,5 +1,5 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
-const { sequelize, topRated, nowPlaying, trending, upComing } = require('./src/models');
+const { sequelize, topRated, nowPlaying, trending, upComing, movies } = require('./src/models');
 const Op = sequelize.Op
 
 let mainWindow
@@ -74,7 +74,7 @@ function deleteData() {
 app.on('ready', () => {
   sequelize.sync().then( () => {
     createWindow()
-    // deleteData ()
+    // deleteData () 
   });
 })
 
@@ -90,24 +90,27 @@ app.on('activate', function () {
   }
 })
 
-ipcMain.on('trending', (e, data) => {
+ipcMain.on('addMovie', (e, data) => {
+  var category = data.category
   console.log('/////////********* trending ********///////////')
-  data.forEach(e => {
-    trending.findOne({
+  data.array.forEach(e => {
+    movies.findOne({
       where : {
-        movieId : e.id
+        movieId : e.id,
+        category : category
       }
     })
     .then(movie => {
       if(!movie) {
         console.log('////////******* movie has been added ******/////////')
-        return trending.create({
+        return movies.create({
+          category : category,
           name : e.title || e.original_title,
           movieId : e.id,
           imagePath : e.poster_path,
           overview : e.overview,
           releaseDate : e.release_date,
-          rating : e.vote_average,
+          rating : e.vote_average || e.rating,
           tagline : e.tagline,
           runtime : e.runtime,
           revenue : e.revenue,
@@ -118,238 +121,102 @@ ipcMain.on('trending', (e, data) => {
           mainWindow.webContents.send('trendingCreated',movie)
         })
         .catch(error => {
+          console.log('////////////// trending create arror ///////////////')
           console.log(error)
         });
       } else {
-        mainWindow.webContents.send('trendingCreated', false)
+        mainWindow.webContents.send('movieAdded', false)
       }
     })
     
   })
 })
 
-
-ipcMain.on('nowPlaying', (e, data) => {
-  console.log('/////////********* nowPlaying ********///////////')
-  data.forEach(e => {
-    nowPlaying.findOne({
-      where : {
-        movieId : e.id
-      }
-    })
-    .then(movie => {
-      if(!movie) {
-        console.log('////////******* movie has been added ******/////////')
-        return nowPlaying.create({
-          name : e.title || e.original_title,
-          movieId : e.id,
-          imagePath : e.poster_path,
-          overview : e.overview,
-          releaseDate : e.release_date,
-          rating : e.vote_average,
-          tagline : e.tagline,
-          runtime : e.runtime,
-          revenue : e.revenue,
-          language : e.original_language
-        })
-        .then(movie => {
-          mainWindow.webContents.send('nowPlayingCreated',movie)
-        })
-        .catch(error => {
-          console.log(error)
-        });
-      } else {
-        mainWindow.webContents.send('nowPlayingCreated', false)
-      }
-    })
-    
-  })
-})
-ipcMain.on('topRated', (e, data) => {
-  console.log('/////////********* topRated ********///////////')
-  data.forEach(e => {
-    topRated.findOne({
-      where : {
-        movieId : e.id
-      }
-    })
-    .then(movie => {
-      if(!movie) {
-        console.log('////////******* movie has been added ******/////////')
-        return topRated.create({
-          name : e.title || e.original_title,
-          movieId : e.id,
-          imagePath : e.poster_path,
-          overview : e.overview,
-          releaseDate : e.release_date,
-          rating : e.vote_average,
-          tagline : e.tagline,
-          runtime : e.runtime,
-          revenue : e.revenue,
-          language : e.original_language
-        })
-        .then(movie => {
-          mainWindow.webContents.send('topRatedCreated',movie)
-        })
-        .catch(error => {
-          console.log(error)
-        });
-      } else {
-        mainWindow.webContents.send('topRatedCreated', false)
-      }
-    })
-    
-  })
-})
-ipcMain.on('upComing', (e, data) => {
-  console.log('/////////********* upcoming ********///////////')
-  data.forEach(e => {
-    upComing.findOne({
-      where : {
-        movieId : e.id
-      }
-    })
-    .then(movie => {
-      if(!movie) {
-        console.log('////////******* movie has been added ******/////////')
-        return upComing.create({
-          name : e.title || e.original_title,
-          movieId : e.id,
-          imagePath : e.poster_path,
-          overview : e.overview,
-          releaseDate : e.release_date,
-          rating : e.vote_average,
-          tagline : e.tagline,
-          runtime : e.runtime,
-          revenue : e.revenue,
-          language : e.original_language
-        })
-        .then(movie => {
-          mainWindow.webContents.send('upComingCreated',movie)
-        })
-        .catch(error => {
-          console.log(error)
-        });
-      } else {
-        mainWindow.webContents.send('upComingCreated', false)
-      }
-    })
-    
-  })
-})
-ipcMain.on('trendingFind', (e, data) => {
+ipcMain.on('findMovies', (e, data) => {
+  var category = data.category
   console.log('//////// trending findall //////////')
   if(data) {
-    trending.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
+    let result
+    let total
+    movies.count({
+      where : {
+        category : category
+      }
+    })
+    .then(count => {
+      console.log('///////////////')
+      console.log(count)
+      total = count
+      return  movies.findAll({
+        where : {
+          category : category
+        },
+        limit : 20,
+        offset: (data.page - 1) * 20
+      })
     })
     .then(trending => {
-      mainWindow.webContents.send('trendingData', trending)
+      console.log(trending)
+      result = {
+        count : total,
+        data : trending
+      }
+      mainWindow.webContents.send('moviesFound', result)
     })
-  }
-})
-ipcMain.on('topRatedFind', (e, data) => {
-  console.log('//////// topRated findall //////////')
-  if(data) {
-    topRated.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
-    })
-    .then(topRated => {
-      mainWindow.webContents.send('topRatedData', topRated)
-    })
-  }
-})
-ipcMain.on('nowPlayingFind', (e, data) => {
-  console.log('//////// nowPlaying findall //////////')
-  if(data) {
-    nowPlaying.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
-    })
-    .then(nowPlaying => {
-      mainWindow.webContents.send('nowPlayingData', nowPlaying)
-    })
-  }
-})
-ipcMain.on('upComingFind', (e, data) => {
-  console.log('//////// upComing findall //////////')
-  if(data) {
-    upComing.findAll({
-      limit : 20,
-      offset: (data.page - 1) * 20
-    })
-    .then(upComing => {
-      mainWindow.webContents.send('upComingData', upComing)
+    .catch(error => {
+      console.log('////////////// trending findall arror ///////////////')
+      console.log(error)
     })
   }
 })
 
-ipcMain.on('findMovieDetails', (e, data) => {
-  if(data.category === '') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trending => {
-      mainWindow.webContents.send('movieDetails', trending)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'trending') {
-    trending.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(trendingMovie => {
-      mainWindow.webContents.send('movieDetails', trendingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'nowPlaying') {
-    nowPlaying.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(nowPlayingMovie => {
-      mainWindow.webContents.send('movieDetails', nowPlayingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'topRated') {
-    topRated.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(topRatedMovie => {
-      mainWindow.webContents.send('movieDetails', topRatedMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
-  if(data.category === 'upComing') {
-    upComing.find({
-      where : {
-        movieId : data.id
-      }
-    })
-    .then(upComingMovie => {
-      mainWindow.webContents.send('movieDetails', upComingMovie)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+
+ipcMain.on('findMovieDetails', async (e, data) => {
+  const movieDetails = await movies.find ({
+    where : {
+      movieId : data.id,
+    }
+  })
+  // const trendingDetails = await trending.find({ 
+  //   where : { movieId : data.id}
+  // });
+  // const topRatedDetails = await topRated.find({ 
+  //   where : { movieId : data.id}
+  // });
+  // const nowPlayingDetails = await nowPlaying.find({ 
+  //   where : { movieId : data.id}
+  // });
+  // const upComingDetails = await upComing.find({ 
+  //   where : { movieId : data.id}
+  // });
+  mainWindow.webContents.send('movieDetails', movieDetails)
+  // (Object.keys(trendingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', trendingDetails) : null) 
+  // (Object.keys(topRatedDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', topRatedDetails) : null)  
+  // (Object.keys(nowPlayingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', nowPlayingDetails) : null)  
+  // (Object.keys(upComingDetails).length !== 0 ? mainWindow.webContents.send('movieDetails', upComingDetails) : null)    
+
+})
+
+ipcMain.on('getData', async(e, data) => {
+  let array1
+  let array2
+  const moviesArr = await movies.findAll({
+    attributes : ['name','movieId']
+  })
+  // const trendingArr = await trending.findAll({
+  //   attributes : ['name','movieId']
+  // })
+  // const topRatedArr = await topRated.findAll({
+  //   attributes : ['name','movieId']
+  // })
+  // const nowPlayingArr = await nowPlaying.findAll({
+  //   attributes : ['name','movieId']
+  // })
+  // const upComingArr = await upComing.findAll({
+  //   attributes : ['name','movieId']
+  // })
+  // array1 = trendingArr.concat(topRatedArr)
+  // array2 = nowPlayingArr.concat(upComingArr)
+  // let result = array1.concat(array2)
+  mainWindow.webContents.send('searchData', moviesArr)
 })

@@ -36,3 +36,61 @@
 .main-content-section .sidebar-section .nav .nav-item .nav-link > i{
     margin-right: 12px;
 }
+
+
+/* Movie Details Section */
+.moviedetails-section{
+    position: relative;
+    padding : 0 ;
+    margin-bottom: 20px;
+}
+.moviedetails-section > a{
+    top: 50%;
+    left: 0;
+    position: absolute;
+    transform: translateY(-50%);
+}
+.moviedetails-section > a > i{
+    color: var(--theme-blue-btn);
+}
+.moviedetails-section > h1{
+    color: var(--theme-blue-btn);
+}
+
+
+/* Movie Details wrapper */
+.movie-details-wrapper{
+    
+}
+.movie-details-wrapper .media{}
+.movie-details-wrapper .media-left{
+    margin-right: 20px;
+}
+.movie-details-wrapper .media-left img{
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+}
+.movie-details-wrapper .media-body{}
+.movie-details-wrapper .media-body h4{}
+.movie-details-wrapper .media-body p{}
+.movie-details-wrapper .media-body p b{}
+
+/* Rating Wrapper */
+.rating-wrapper{
+    
+}
+.rating-wrapper button{
+    color: #fff;
+    border: 0;
+    box-shadow: none;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background-color: var(--theme-blue-btn);
+}
+.rating-wrapper .card{
+    border: 0;
+}
+.rating-wrapper .card .card-body{
+    padding: 10px 0;
+}

@@ -6,7 +6,8 @@ import {
 import { apiKey } from '../../config/config'
 import axiosInstance from '../axiosInstance'
 import { Redirect } from 'react-router-dom'
-import PaginationComp from './Pagination'
+import './Listing.css'
+import Preloader from '../preloader/preloader';
 const { ipcRenderer } = window.require('electron');
 const isOnline = require('is-online');
 
@@ -23,7 +24,8 @@ class Listing extends Component {
             setPage : false,
             loading : true
         }
-        this.setPage = this.setPage.bind(this)
+        this.setNextPage = this.setNextPage.bind(this)
+        this.setPrevPage = this.setPrevPage.bind(this)
     }
     componentDidUpdate (prevProps, prevStates) {
         if(prevProps.active !== this.props.active
@@ -40,7 +42,11 @@ class Listing extends Component {
                     url : `trending/all/day?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    ipcRenderer.send("trending", res.data.results)
+                    var data = {
+                        array : res.data.results,
+                        category : 'trending'
+                    }
+                    ipcRenderer.send("addMovie", data)
                     this.seeResponse()
                     this.setState ({
                         trendingMovies : res.data.results,
@@ -57,12 +63,13 @@ class Listing extends Component {
             } else {
                 var data = {
                     page : this.state.page,
+                    category : 'trending'
                 }
-                ipcRenderer.send('trendingFind', data)
-                ipcRenderer.on('trendingData', (e, data) => {
+                ipcRenderer.send('findMovies', data)
+                ipcRenderer.on('moviesFound', (e, res) => {
                     this.setState ({
-                        trendingMovies : data,
-                        totalPages : data.length/20,
+                        trendingMovies : res.data,
+                        totalPages : res.count/20,
                         setPage : false,
                         loading : false
                     })
@@ -71,7 +78,7 @@ class Listing extends Component {
         })
     }
     seeResponse () {
-        ipcRenderer.on("trendingCreated",(e, data) => {
+        ipcRenderer.on("movieAdded",(e, data) => {
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -83,9 +90,15 @@ class Listing extends Component {
             movieId : e
         })
     }
-    setPage = (e) => {
+    setNextPage = () => {
         this.setState ({
-            page : e,
+            page : this.state.page + 1,
+            setPage : true
+        })
+    }
+    setPrevPage = () => {
+        this.setState ({
+            page : this.state.page - 1,
             setPage : true
         })
     }
@@ -104,19 +117,34 @@ class Listing extends Component {
                                         <CardImg top width="100px" src={`https://image.tmdb.org/t/p/w500/${e.dataValues ? e.dataValues.imagePath : e.poster_path}`} alt={e.title} />
                                         <CardBody>
                                         <CardTitle>{e.dataValues ? e.dataValues.name : e.title }</CardTitle>
-                                        <CardText >{e.overview || e.dataValues.overview}</CardText>
+                                        <CardText >{e.overview || e.dataValues? (e.overview || e.dataValues.overview) : null}</CardText>
                                         </CardBody>
                                     </Card>
                                 </Col>
                                 })}
                             </Row>
+                            <div className="pagination-wrapper d-flex">
+                                {
+                                    this.state.page !== 1 ?
+                                    <div className='loadPrev'>
+                                        <span  onClick={() => this.setPrevPage()}>Prev</span>
+                                    </div>
+                                        : null
+                                }
+                                { 
+                                    this.state.totalPages !== this.state.page ?
+                                    <div className='ml-auto loadNext'>
+                                        <span  onClick={() => this.setNextPage()}>Next</span>
+                                    </div>
+                                    : null
+                                }
+                                </div>
                         </div>
                         : 
                         <p>No Records</p>
                     )    
-                    :   <div><Progress animated color="success" value={2 * 5}/></div>
-                    }
-                <PaginationComp totalPages={this.state.totalPages} page={this.state.page} setPage={this.setPage}/>
+                    :  <Preloader/>
+                }
                 {this.state.movieDetail ? <Redirect push from='/trending' to={{pathname:`/movie/${this.state.movieId}`, state : {id : this.state.movieId, category : 'trending'}}}/> : null }
             </div>
         )
