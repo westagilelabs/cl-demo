@@ -48,7 +48,11 @@ class NowPlaying extends Component {
                     url : `movie/now_playing?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    ipcRenderer.send("nowPlaying", res.data.results)
+                    var data = {
+                        array : res.data.results,
+                        category : 'nowPlaying'
+                    }
+                    ipcRenderer.send("addMovie", data)
                     this.seeResponse ()
                     this.setState ({
                         nowPlaying : res.data.results,
@@ -64,9 +68,10 @@ class NowPlaying extends Component {
             } else {
                 var data = {
                     page : this.state.page,
+                    category : 'nowPlaying'
                 }
-                ipcRenderer.send('nowPlayingFind', data)
-                ipcRenderer.on('nowPlayingData', (e, res) => {
+                ipcRenderer.send('findMovies', data)
+                ipcRenderer.on('moviesFound', (e, res) => {
                     this.setState ({
                         nowPlaying : res.data,
                         totalPages : res.count/20,
@@ -78,7 +83,7 @@ class NowPlaying extends Component {
         })
     }
     seeResponse () {
-        ipcRenderer.on("nowPlayingCreated",(e, data) => {
+        ipcRenderer.on("movieAdded",(e, data) => {
             if(data) {
                 console.log('///////// data added to db ////////')
             }

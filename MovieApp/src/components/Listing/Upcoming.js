@@ -40,7 +40,7 @@ class UpComing extends Component {
         })
     }
     seeResponse () {
-        ipcRenderer.on("upComingCreated",(e, data) => {
+        ipcRenderer.on("movieAdded",(e, data) => {
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -67,7 +67,11 @@ class UpComing extends Component {
                     url : `movie/upcoming?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    ipcRenderer.send('upComing',res.data.results)
+                    var data = {
+                        array : res.data.results,
+                        category : 'upComing'
+                    }
+                    ipcRenderer.send("addMovie", data)
                     this.seeResponse ()
                     this.setState ({
                         upComing : res.data.results,
@@ -83,10 +87,10 @@ class UpComing extends Component {
             } else {
                 var data = {
                     page : this.state.page,
+                    category : 'upComing'
                 }
-                ipcRenderer.send('upComingFind', data)
-                ipcRenderer.on('upComingData', (e, res) => {
-                    console.log(data)
+                ipcRenderer.send('findMovies', data)
+                ipcRenderer.on('moviesFound', (e, res) => {
                     this.setState ({
                         upComing : res.data,
                         totalPages :res.count/20,
@@ -101,7 +105,7 @@ class UpComing extends Component {
         return (
             <div className="container-fluid">
                 {this.state.setPage ? this.getUpComingMovies() : null}            
-                <h1>UpComing Movies</h1>
+                <h1>Up Coming Movies</h1>
                 { !this.state.loading ? 
                     (this.state.upComing.length > 0 ? 
                         <div>

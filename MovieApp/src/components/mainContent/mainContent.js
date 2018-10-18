@@ -22,7 +22,6 @@ class MainContent extends Component {
     }
 
     componentDidMount(){
-        console.log(this.props)
         if(this.props.category) {
             if(this.props.category === 'trending') {
                 this.toggle(1)

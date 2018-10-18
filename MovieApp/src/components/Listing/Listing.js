@@ -42,7 +42,11 @@ class Listing extends Component {
                     url : `trending/all/day?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    ipcRenderer.send("trending", res.data.results)
+                    var data = {
+                        array : res.data.results,
+                        category : 'trending'
+                    }
+                    ipcRenderer.send("addMovie", data)
                     this.seeResponse()
                     this.setState ({
                         trendingMovies : res.data.results,
@@ -59,9 +63,10 @@ class Listing extends Component {
             } else {
                 var data = {
                     page : this.state.page,
+                    category : 'trending'
                 }
-                ipcRenderer.send('trendingFind', data)
-                ipcRenderer.on('trendingData', (e, res) => {
+                ipcRenderer.send('findMovies', data)
+                ipcRenderer.on('moviesFound', (e, res) => {
                     this.setState ({
                         trendingMovies : res.data,
                         totalPages : res.count/20,
@@ -73,7 +78,7 @@ class Listing extends Component {
         })
     }
     seeResponse () {
-        ipcRenderer.on("trendingCreated",(e, data) => {
+        ipcRenderer.on("movieAdded",(e, data) => {
             if(data) {
                 console.log('///////// data added to db ////////')
             }

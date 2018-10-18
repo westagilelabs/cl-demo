@@ -33,7 +33,7 @@ class TopRated extends Component {
         }
     }
     seeResponse () {
-        ipcRenderer.on("topRatedCreated",(e, data) => {
+        ipcRenderer.on("movieAdded",(e, data) => {
             if(data) {
                 console.log('///////// data added to db ////////')
             }
@@ -66,7 +66,12 @@ class TopRated extends Component {
                     url : `movie/top_rated?api_key=${apiKey}&page=${this.state.page}`
                 })
                 .then(res => {
-                    ipcRenderer.send('topRated',res.data.results)
+                    
+                    var data = {
+                        array : res.data.results,
+                        category : 'topRated'
+                    }
+                    ipcRenderer.send("addMovie", data)
                     this.seeResponse()
                     this.setState ({
                         topRated : res.data.results,
@@ -82,9 +87,10 @@ class TopRated extends Component {
             } else {
                 var data = {
                     page : this.state.page,
+                    category : 'topRated'
                 }
-                ipcRenderer.send('topRatedFind', data)
-                ipcRenderer.on('topRatedData', (e, res) => {
+                ipcRenderer.send('findMovies', data)
+                ipcRenderer.on('moviesFound', (e, res) => {
                     this.setState ({
                         topRated : res.data,
                         totalPages : res.count/20,
