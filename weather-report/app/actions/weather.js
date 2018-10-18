@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { getWeatherData, getWeatherForecast } from '../api/getWeatherData';
 import { Weather } from '../src/model';
-import { listAll, insertCityWeather, upsert } from '../src/WeatherModel';
+import { upSertForeCast, upsert, searchWeather } from '../src/WeatherModel';
 
 async function fetchWeatherData(city) {
   try {
@@ -26,28 +26,43 @@ async function fetchWeatherData(city) {
         sunset: response.data.sys.sunset
       };
       upsert(data, data.id);
-      const list = listAll();
-      console.log('this is list-->', list);
     }
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error : ",error);
   }
 }
 
 async function fetchWeatherForecast(city) {
   try {
     const response = await getWeatherForecast(city);
-    let data = {};
+    let tempData = {};
+    tempData.list = [];
     if (response.data) {
-      data = {
-        temperature: Math.floor(forecast.list.main.temp - 273.15)
-      };
+      let temp, date, description;
+      response.data.list.map(forecast => {
+        temp = Math.floor(forecast.main.temp - 273.15);
+        description = forecast.weather[0].description;
+        date = forecast.dt_txt;
+        return tempData.list.push([date, temp]);
+      });
+      let tempdataStr = JSON.stringify(tempData);
+      upSertForeCast(tempdataStr,city);
     }
-    return response;
+
+    return tempData;
   } catch (error) {
-    console.log(error);
+    console.log("Error : ",error);
   }
 }
 
-export { fetchWeatherData, fetchWeatherForecast };
+async function offlineSearch(city){
+ try {
+   let resp = await searchWeather(city);
+   return resp;
+ } catch (e) {
+   console.log("Error : ", e);
+ }
+}
+
+export { fetchWeatherData, fetchWeatherForecast, offlineSearch };

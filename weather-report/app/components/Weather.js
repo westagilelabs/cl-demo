@@ -21,16 +21,47 @@ import BgImage from '../assets/images/clouds2.gif';
 import Preloader from './preloader/preloader';
 
 type Props = {
-  fetchWeather: () => void
+  fetchWeather: () => void,
+  searchOffline: () => void,
+  setSearchPhrase: () => void
 };
-
+let offline = false;
+let timerId;
 export default class Weather extends Component<Props> {
+  constructor(props){
+    super(props);
+    this.state = {
+     online : false,
+      loader : false
+  };
+  }
   props: Props;
+
+
+  componentDidMount(){
+
+    timerId = setInterval(()=>{
+      this.setState({online : navigator.onLine})
+    },1000)
+
+  }
+
+  componentDidUpdate(){
+
+  }
+
+  setPreloaderStatus(){
+    this.setState({
+      loader : !this.state.loader
+    });
+  }
 
   render() {
     let cityWeather = '',
       details;
     if (this.props.results) {
+      console.log("setting preloader to false");
+      this.setPreloaderStatus();
       cityWeather = (
         <Col>
           <Card>
@@ -43,25 +74,11 @@ export default class Weather extends Component<Props> {
                   {this.props.results.description}
                 </Link>{' '}
               </CardTitle>
-              {/* <CardText>
-                Temp : from{' '}
-                {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
-                {Math.floor(this.props.results.main.temp_max - 273.15)} °С,
-              </CardText>
-              <CardText>
-                {' '}
-                wind {this.props.results.wind.speed} m/s, clouds{' '}
-                {this.props.results.clouds.all} %, 1011 hpa{' '}
-              </CardText>
-              <CardText>
-                Geo coords [{this.props.results.coord.lat},{' '}
-                {this.props.results.coord.lon}]
-              </CardText> */}
             </CardBody>
           </Card>
         </Col>
       );
-      details = <WeatherDetails />;
+      details = <WeatherDetails online={this.state.online} />;
     }
     return (
       <div className={styles.weatherDetailsWrapper}>
@@ -79,7 +96,9 @@ export default class Weather extends Component<Props> {
           <Form
             onSubmit={e => {
               e.preventDefault();
-              this.props.fetchWeather(e);
+              console.log("online ==>",this.state.online);
+             this.setPreloaderStatus();
+              this.state.online ? this.props.fetchWeather(e) : this.props.searchOffline(e);
             }}
             id="searchForm"
             noValidate
@@ -93,7 +112,9 @@ export default class Weather extends Component<Props> {
                 id="searchTextBox"
                 name="searchTextBox"
                 className={styles.inputField}
-                onChange={this.props.setSearchPhrase}
+                onChange={() => {
+                  this.props.setSearchPhrase();
+                }}
                 placeholder="Enter a city name here..."
               />
               <button type="submit" className={styles.inputButton}>
@@ -108,7 +129,9 @@ export default class Weather extends Component<Props> {
           </div>
         </div>
         {details}
+        {this.state.loader ? <Preloader /> : ""}
       </div>
+
     );
   }
 }

@@ -2,7 +2,7 @@
 import { connect } from 'react-redux';
 // import your child components
 import Weather from '../components/Weather';
-import { fetchWeatherData } from '../actions/weather';
+import { fetchWeatherData, offlineSearch } from '../actions/weather';
 
 const mapStateToProps = state => {
   return {
@@ -27,6 +27,21 @@ const mapDispatchToProps = dispatch => {
             resolve(dispatch({ type: 'PUSH_WEATHER_RESULTS', val: results }));
           })
       );
+    },
+    searchOffline: async event => {
+      const results = await offlineSearch(event.target[0].value);
+      await dispatch(() => {
+        new Promise(resolve => {
+          resolve(dispatch({ type: 'CLEAR_WEATHER_STATE' }));
+        });
+      });
+      await dispatch(
+        () =>
+          new Promise(resolve => {
+            resolve(dispatch({ type: 'PUSH_WEATHER_RESULTS', val: results }));
+          })
+      );
+
     },
     setSearchPhrase: event =>
       dispatch({ type: 'SET_SEARCH_PHRASE', val: event.target.value }),

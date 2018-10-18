@@ -16,22 +16,24 @@ const options = {
     title: 'Temperature'
   }
 };
-
+let offline = false;
 export default class WeatherDetails extends Component {
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
-    if (this.props.results.name) {
-      this.props.fetchWeatherForecast(this.props.results.name);
-    }
+        if (this.props.results.city && !this.props.offline) {
+          this.props.fetchWeatherForecast(this.props.results.city);
+        }
   }
 
-  componentDidUpdate(prevProps, prevStates) {}
+  componentDidUpdate(prevProps, prevStates) {
+
+  }
 
   getTimeFromTimeStamp(timeStamp) {
-    let date = new Date(timeStamp);
+    let date = new Date(parseInt(timeStamp));
     // Hours part from the timestamp
     let hours = date.getUTCHours();
     // Minutes part from the timestamp
@@ -47,14 +49,16 @@ export default class WeatherDetails extends Component {
 
   render() {
     let tempData = [['day', 'Temperature']];
-    if (this.props.forecast) {
+    if (this.props.online && this.props.forecast || this.props.results.foreCast) {
+      let offlineForecast = this.props.results.foreCast ? JSON.parse(this.props.results.foreCast) : [];
+      let iterationArr = !this.props.online ? offlineForecast.list : this.props.forecast.list ;
       let temp, date, description, hours;
-      this.props.forecast.list.map(forecast => {
-        temp = Math.floor(forecast.main.temp - 273.15);
-        description = forecast.weather[0].description;
-        date = new Date(forecast.dt_txt);
+      iterationArr.map(forecast => {
+        temp = forecast.temp;
+        description = forecast.description;
+        date = new Date(forecast[0]);
         hours = date.getHours();
-        return tempData.push([date, temp]);
+        return tempData.push([date,forecast[1]]);
       });
     }
     let wind = this.props.results.windSpeed,

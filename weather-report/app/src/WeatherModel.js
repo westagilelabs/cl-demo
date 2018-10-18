@@ -5,13 +5,18 @@ const upsert = (values, id) => {
   return Weather.findOne({ where: { id: id } }).then(obj => {
     if (obj) {
       // update
-      return obj.update(values);
+      return obj.update(values, {where: {id:id} });
     } else {
       // insert
       return insertCityWeather(values);
     }
   });
 };
+
+const upSertForeCast = async (values, city) => {
+  let w = await Weather.findOne({ where: { city : city } });
+  return w.update({foreCast : values }, { where: { city : city } })
+}
 
 const insertCityWeather = data => {
   return sequelize
@@ -32,17 +37,21 @@ const insertCityWeather = data => {
         pressure: data.pressure,
         humidity: data.humidity,
         sunrise: data.sunrise,
-        sunset: data.sunset
+        sunset: data.sunset,
+        foreCast : ""
       })
     )
     .then(Weather.findAll().then(items => {}));
 };
 
-const listAll = async function() {
-  let prom = Weather.findAll();
-  return prom.then(records => {
-    return records.map(item => item.toJSON());
-  });
-};
+//Offline weather search
+const searchWeather = city => {
+  return Weather.findOne({
+    where :
+          {
+            city : sequelize.where(sequelize.fn('LOWER', sequelize.col('city')), 'LIKE', '%' + city + '%')
+          }
+  }).then(obj => obj.toJSON());
+}
 
-export { insertCityWeather, listAll, upsert };
+export { insertCityWeather, upSertForeCast, upsert, searchWeather };

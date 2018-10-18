@@ -37,4 +37,6 @@ const Weather = sequelize.define('weather', {
   foreCast: Sequelize.TEXT
 });
 
+
+
 export { sequelize, Weather };

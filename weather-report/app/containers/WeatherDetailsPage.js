@@ -21,7 +21,7 @@ const mapDispatchToProps = dispatch => {
         () =>
           new Promise(resolve => {
             resolve(
-              dispatch({ type: 'PUSH_WEATHER_FORECAST', val: results.data })
+              dispatch({ type: 'PUSH_WEATHER_FORECAST', val: results })
             );
           })
       );
