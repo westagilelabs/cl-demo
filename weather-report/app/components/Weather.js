@@ -25,7 +25,6 @@ type Props = {
   searchOffline: () => void,
   setSearchPhrase: () => void
 };
-let offline = false;
 let timerId;
 export default class Weather extends Component<Props> {
   constructor(props){
@@ -42,11 +41,15 @@ export default class Weather extends Component<Props> {
 
     timerId = setInterval(()=>{
       this.setState({online : navigator.onLine})
-    },1000)
+    },2000)
 
   }
 
   componentDidUpdate(){
+
+  }
+
+  componentDidUnmount(){
 
   }
 
@@ -60,8 +63,6 @@ export default class Weather extends Component<Props> {
     let cityWeather = '',
       details;
     if (this.props.results) {
-      console.log("setting preloader to false");
-      this.setPreloaderStatus();
       cityWeather = (
         <Col>
           <Card>
@@ -80,6 +81,7 @@ export default class Weather extends Component<Props> {
       );
       details = <WeatherDetails online={this.state.online} />;
     }
+
     return (
       <div className={styles.weatherDetailsWrapper}>
         <img src={BgImage} className={styles.cloudsImage} />
@@ -96,9 +98,12 @@ export default class Weather extends Component<Props> {
           <Form
             onSubmit={e => {
               e.preventDefault();
-              console.log("online ==>",this.state.online);
              this.setPreloaderStatus();
+
               this.state.online ? this.props.fetchWeather(e) : this.props.searchOffline(e);
+              setTimeout(() => {
+                this.setPreloaderStatus();
+              }, 1000);
             }}
             id="searchForm"
             noValidate
@@ -112,9 +117,9 @@ export default class Weather extends Component<Props> {
                 id="searchTextBox"
                 name="searchTextBox"
                 className={styles.inputField}
-                onChange={() => {
-                  this.props.setSearchPhrase();
-                }}
+                // onChange={() => {
+                //   this.props.setSearchPhrase();
+                // }}
                 placeholder="Enter a city name here..."
               />
               <button type="submit" className={styles.inputButton}>
