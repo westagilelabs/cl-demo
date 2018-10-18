@@ -51,7 +51,14 @@ const searchWeather = city => {
           {
             city : sequelize.where(sequelize.fn('LOWER', sequelize.col('city')), 'LIKE', '%' + city + '%')
           }
-  }).then(obj => obj.toJSON());
+  }).then(obj => {
+    try{
+      return obj.toJSON();
+    }catch(e){
+      return "No result found";
+    }
+
+  });
 }
 
 export { insertCityWeather, upSertForeCast, upsert, searchWeather };

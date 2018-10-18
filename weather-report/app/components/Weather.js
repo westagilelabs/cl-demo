@@ -49,7 +49,7 @@ export default class Weather extends Component<Props> {
 
   }
 
-  componentDidUnmount(){
+  componentWillUnmount(){
 
   }
 
@@ -62,9 +62,9 @@ export default class Weather extends Component<Props> {
   render() {
     let cityWeather = '',
       details;
-    if (this.props.results) {
-      cityWeather = (
-        <Col>
+    console.log("this.props.result",this.props.result);
+    if (this.props.results && this.props.results !== "No result found") {
+      cityWeather =( <Col>
           <Card>
             <CardBody>
               <CardTitle>
@@ -78,8 +78,10 @@ export default class Weather extends Component<Props> {
             </CardBody>
           </Card>
         </Col>
-      );
+      ) ;
       details = <WeatherDetails online={this.state.online} />;
+    } else if (this.props.results === "No result found"){
+      cityWeather = (<label className="no-results">No result found</label>);
     }
 
     return (
@@ -117,9 +119,6 @@ export default class Weather extends Component<Props> {
                 id="searchTextBox"
                 name="searchTextBox"
                 className={styles.inputField}
-                // onChange={() => {
-                //   this.props.setSearchPhrase();
-                // }}
                 placeholder="Enter a city name here..."
               />
               <button type="submit" className={styles.inputButton}>

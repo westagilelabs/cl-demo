@@ -83,3 +83,13 @@ a:hover {
 .climate-details-wrapper + div svg > rect{
   fill: rgba(255,255,255,0.5) !important;
 }
+
+
+.no-results{
+  width: 100vw;
+  height: calc(100vh - 225px);
+  display: flex;
+  font-size: 32px;
+  align-items: center;
+  justify-content: center;
+}
