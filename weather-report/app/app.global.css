@@ -66,3 +66,30 @@ a:hover {
 }
 
 /* eslint-enable */
+.climate-details-wrapper{
+  position: relative;
+}
+.climate-details-wrapper table{
+  margin: 0;
+}
+.climate-details-wrapper table th,
+.climate-details-wrapper table td{
+  border-color: #333;
+}
+.climate-details-wrapper table th,
+.climate-details-wrapper table td{
+  color: #000;
+}
+.climate-details-wrapper + div svg > rect{
+  fill: rgba(255,255,255,0.5) !important;
+}
+
+
+.no-results{
+  width: 100vw;
+  height: calc(100vh - 225px);
+  display: flex;
+  font-size: 32px;
+  align-items: center;
+  justify-content: center;
+}

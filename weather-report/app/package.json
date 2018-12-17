@@ -1,18 +1,23 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "electron-react-boilerplate",
+  "name": "weather-forecast",
+  "productName": "weather-forecast",
   "version": "0.16.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "description": "Weather report application",
   "main": "./main.prod.js",
   "author": {
     "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
+    "email": "nagama.i@westagilelabs.com",
+    "url": ""
   },
   "scripts": {
     "electron-rebuild": "node -r babel-register ../internals/scripts/ElectronRebuild.js",
-    "postinstall": "yarn electron-rebuild"
+    "postinstall": "yarn electron-rebuild",
+    "rebuild": "electron-rebuild -f -w sqlite3"
   },
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "electron-store": "^2.0.0",
+    "sequelize": "^4.39.0",
+    "sqlite3": "^4.0.2"
+  }
 }

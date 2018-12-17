@@ -15,7 +15,7 @@ export default () => (
       <Route path={routes.COUNTER} component={CounterPage} />
       <Route path={routes.WEATHER} component={WeatherPage} />
       <Route path={routes.WEATHER_DETAILS} component={WeatherDetailsPage} />
-      <Route path={routes.HOME} component={HomePage} />
+      <Route path={routes.HOME} component={WeatherPage} />
     </Switch>
   </App>
 );

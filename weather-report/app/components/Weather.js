@@ -2,7 +2,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import WeatherDetails from '../containers/WeatherDetailsPage'
+import WeatherDetails from '../containers/WeatherDetailsPage';
 import {
   Row,
   Col,
@@ -17,51 +17,73 @@ import {
 } from 'reactstrap';
 import styles from './Weather.css';
 import routes from '../constants/routes';
-import BgImage from '../assets/images/clouds2.gif'
+import BgImage from '../assets/images/clouds2.gif';
 import Preloader from './preloader/preloader';
 
 type Props = {
-  fetchWeather: () => void
+  fetchWeather: () => void,
+  searchOffline: () => void,
+  setSearchPhrase: () => void
 };
-
+let timerId;
 export default class Weather extends Component<Props> {
+  constructor(props){
+    super(props);
+    this.state = {
+     online : false,
+      loader : false
+  };
+  }
   props: Props;
 
+
+  componentDidMount(){
+
+    timerId = setInterval(()=>{
+      this.setState({online : navigator.onLine})
+    },2000)
+
+  }
+
+  componentDidUpdate(){
+
+  }
+
+  componentWillUnmount(){
+
+  }
+
+  setPreloaderStatus(){
+    this.setState({
+      loader : !this.state.loader
+    });
+  }
+
   render() {
-    let cityWeather = '',details;
-    if (this.props.results) {
-      cityWeather = (
-        <Col>
+    let cityWeather = '',
+      details;
+    console.log("this.props.result",this.props.result);
+    if (this.props.results && this.props.results !== "No result found") {
+      cityWeather =( <Col>
           <Card>
             <CardBody>
               <CardTitle>
-                <Link to={routes.WEATHER_DETAILS} replace>
+                <Link to={routes.HOME} replace>
                   {' '}
-                  {this.props.results.name}, {this.props.results.sys.country},{' '}
-                  {Math.floor(this.props.results.main.temp - 273.15)} °С,{' '}
-                  {this.props.results.weather[0].description}
+                  {this.props.results.city}, {this.props.results.country},{' '}
+                  {this.props.results.temperature} °С,{' '}
+                  {this.props.results.description}
                 </Link>{' '}
               </CardTitle>
-              <CardText>
-                Temp : from{' '}
-                {Math.floor(this.props.results.main.temp_min - 273.15)} to{' '}
-                {Math.floor(this.props.results.main.temp_max - 273.15)} °С,
-              </CardText>
-              <CardText>
-                {' '}
-                wind {this.props.results.wind.speed} m/s, clouds{' '}
-                {this.props.results.clouds.all} %, 1011 hpa{' '}
-              </CardText>
-              <CardText>
-                Geo coords [{this.props.results.coord.lat},{' '}
-                {this.props.results.coord.lon}]
-              </CardText>
             </CardBody>
           </Card>
         </Col>
-      );
-      details = (<WeatherDetails/>);
+      ) ;
+      details = <WeatherDetails online={this.state.online} />;
+    } else if (this.props.results === "No result found"){
+      cityWeather = (<label className="no-results">No result found</label>);
     }
+
     return (
       <div className={styles.weatherDetailsWrapper}>
         <img src={BgImage} className={styles.cloudsImage} />
@@ -78,7 +100,12 @@ export default class Weather extends Component<Props> {
           <Form
             onSubmit={e => {
               e.preventDefault();
-              this.props.fetchWeather(e);
+             this.setPreloaderStatus();
+
+              this.state.online ? this.props.fetchWeather(e) : this.props.searchOffline(e);
+              setTimeout(() => {
+                this.setPreloaderStatus();
+              }, 1000);
             }}
             id="searchForm"
             noValidate
@@ -92,7 +119,6 @@ export default class Weather extends Component<Props> {
                 id="searchTextBox"
                 name="searchTextBox"
                 className={styles.inputField}
-                onChange={this.props.setSearchPhrase}
                 placeholder="Enter a city name here..."
               />
               <button type="submit" className={styles.inputButton}>
@@ -107,7 +133,9 @@ export default class Weather extends Component<Props> {
           </div>
         </div>
         {details}
+        {this.state.loader ? <Preloader /> : ""}
       </div>
+
     );
   }
 }
