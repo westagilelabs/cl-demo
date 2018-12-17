@@ -1,8 +1,12 @@
 /* eslint-disable */
 import { connect } from 'react-redux';
+import Store from  'electron-store'
 // import your child components
 import Weather from '../components/Weather';
 import { fetchWeatherData, offlineSearch } from '../actions/weather';
+// const Store = window.require('electron-store');
+const store  = new Store();
+
 
 const mapStateToProps = state => {
   return {

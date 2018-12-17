@@ -68,7 +68,7 @@ export default class Weather extends Component<Props> {
           <Card>
             <CardBody>
               <CardTitle>
-                <Link to={routes.WEATHER_DETAILS} replace>
+                <Link to={routes.HOME} replace>
                   {' '}
                   {this.props.results.city}, {this.props.results.country},{' '}
                   {this.props.results.temperature} °С,{' '}

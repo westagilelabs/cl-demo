@@ -6,33 +6,32 @@ const axiosInstance = axios.create({
   ,withCredentials : true
 })
 
-let currentForm;
+// let currentForm;
 
 axiosInstance.interceptors.request.use(config => {
 
-
   if(config.data){
-    currentForm = config.data.currentForm;
+    // currentForm = config.data.currentForm;
   }
 
   return config
 })
 
-axiosInstance.interceptors.response.use((response) => {
+axiosInstance.interceptors.response.use((response) =>
     // if(response.data.error){
     //   // return store.dispatch({ type: "ERROR", val: response.data.error })
     // }
     // else{
-      return response
+       response
     // }
-  },
-  (error) => {
+  ,
+  (error) =>
     // if(error){
     //   store.dispatch({ type: "ERROR", val: 'Something went wrong, Please try again' })
     // }
     // else {
-      return Promise.reject(error)
+       Promise.reject(error)
     // }
-  })
+  )
 
 export default axiosInstance
